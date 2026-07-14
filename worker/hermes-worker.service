@@ -1,0 +1,30 @@
+# systemd-Unit für den Hermes Poll-Worker (ARCHITEKTUR.md §4).
+#
+# Installation (als root, einmalig — siehe worker/README.md):
+#   useradd --create-home --shell /usr/sbin/nologin hermes-worker
+#   usermod -aG docker hermes-worker        # make check läuft im Container
+#   cp hermes-worker.service /etc/systemd/system/
+#   systemctl daemon-reload && systemctl enable --now hermes-worker
+
+[Unit]
+Description=Hermes Pipeline Poll-Worker
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=hermes-worker
+Group=hermes-worker
+Environment=HERMES_WORKER_CONFIG=/home/hermes-worker/config.yaml
+ExecStart=/home/hermes-worker/.venv/bin/hermes-worker
+Restart=on-failure
+RestartSec=10
+
+# Der Worker braucht nur ~/projekte und seine Datenbank (ARCHITEKTUR.md §4)
+ProtectSystem=strict
+ReadWritePaths=/home/hermes-worker
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

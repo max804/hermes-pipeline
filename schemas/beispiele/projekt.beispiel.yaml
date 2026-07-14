@@ -1,0 +1,79 @@
+# Beispiel einer validen projekt.yaml — Referenz für den Architekten-Skill
+# (Pilotprojekt aus ARCHITEKTUR.md §11: Homelab-Statusseite)
+
+projekt:
+  name: homelab-status
+  domaene: web
+  beschreibung: >
+    Kachel-Dashboard mit HTTP-Healthchecks für Portainer, n8n, Ollama und
+    Grafana. Eine Seite, periodischer Refresh per HTMX, Dark Mode.
+
+architektur:
+  module:
+    - "app/healthchecks.py — asynchrone HTTP-Prüfungen mit Timeout"
+    - "app/routen/status.py — eine Route, rendert das Kachel-Grid"
+  datenmodell: >
+    Dienst(name, url, status: ok|fehler|timeout, antwortzeit_ms) — nur im
+    Speicher, keine Persistenz.
+  routen:
+    - "GET / — Kachel-Dashboard"
+    - "GET /partials/status — HTMX-Fragment für den Refresh"
+  ausgeschlossen:
+    - kein Auth in v1
+    - keine Historie/Persistenz, nur Live-Zustand
+
+karten:
+  - id: K01
+    titel: Healthcheck-Modul
+    ziel: HTTP-Healthchecks für konfigurierte Dienste mit Timeout implementieren.
+    dateien:
+      - app/healthchecks.py
+      - tests/test_karte_01.py
+    akzeptanz:
+      - pytest tests/test_karte_01.py läuft grün
+      - Timeout eines Dienstes blockiert die anderen Prüfungen nicht
+    abhaengig_von: []
+    test_stub: |
+      import pytest
+      from app.healthchecks import pruefe_dienst
+
+      @pytest.mark.asyncio
+      async def test_timeout_liefert_status_timeout():
+          ergebnis = await pruefe_dienst("http://10.255.255.1:9", timeout_s=0.2)
+          assert ergebnis.status == "timeout"
+
+  - id: K02
+    titel: Status-Seite mit Kachel-Grid
+    ziel: Dashboard-Route rendert je Dienst eine Katalog-Card mit Statusbadge.
+    dateien:
+      - app/routen/status.py
+      - tests/test_karte_02.py
+    akzeptanz:
+      - pytest tests/test_karte_02.py läuft grün
+      - GET / liefert 200 und enthält je Dienst eine Kachel
+    abhaengig_von: [K01]
+    test_stub: |
+      from fastapi.testclient import TestClient
+      from app.main import app
+
+      def test_dashboard_zeigt_alle_dienste():
+          antwort = TestClient(app).get("/")
+          assert antwort.status_code == 200
+          for dienst in ("Portainer", "n8n", "Ollama", "Grafana"):
+              assert dienst in antwort.text
+
+  - id: K03
+    titel: Deploy-Karte
+    ziel: Stack per deploy.sh über die Portainer-API ausrollen und Healthcheck prüfen.
+    dateien:
+      - deploy/deploy.sh
+      - tests/test_karte_03.py
+    akzeptanz:
+      - deploy.sh nutzt das scoped Token per Dateipfad, nie Klartext im Repo
+      - Healthcheck über die echte URL antwortet mit 200
+    abhaengig_von: [K02]
+    test_stub: |
+      import subprocess
+
+      def test_deploy_script_syntax():
+          assert subprocess.run(["bash", "-n", "deploy/deploy.sh"]).returncode == 0

@@ -1,0 +1,71 @@
+"""Konfiguration des Workers.
+
+Geladen aus YAML; Pfad kommt aus $HERMES_WORKER_CONFIG, sonst
+``~/.config/hermes-worker/config.yaml``. Beispiel: ``config.beispiel.yaml``.
+"""
+
+from __future__ import annotations
+
+import os
+from pathlib import Path
+
+import yaml
+from pydantic import BaseModel, ConfigDict, Field
+
+
+class Spalten(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    eingang: str = "Eingang"
+    architektur: str = "Architektur"
+    freigabe: str = "Freigabe"
+    bereit: str = "Bereit"
+    in_arbeit: str = "In Arbeit"
+    review: str = "Review"
+    done: str = "Done"
+    blockiert: str = "Blockiert"
+
+
+class TelegramKonfig(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    # Token liegt in einer Datei (nie Klartext in Config oder Repo)
+    token_datei: Path | None = None
+    chat_id: str | None = None
+
+
+class WorkerKonfig(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    board_url: str = "http://127.0.0.1:9119"
+    poll_intervall_s: int = 30
+    projekte_verzeichnis: Path = Path("~/projekte")
+    datenbank: Path = Path("~/worker.db")
+
+    aider_bin: str = "aider"
+    coder_modell: str = "ollama_chat/qwen3-coder"
+    aider_timeout_s: int = Field(default=1200, description="20 Minuten, harte Regel")
+    max_versuche: int = 3
+
+    docker_speicher: str = "8g"
+    docker_cpus: str = "4"
+
+    spalten: Spalten = Spalten()
+    telegram: TelegramKonfig = TelegramKonfig()
+
+    def model_post_init(self, __context) -> None:
+        self.projekte_verzeichnis = self.projekte_verzeichnis.expanduser()
+        self.datenbank = self.datenbank.expanduser()
+        if self.telegram.token_datei:
+            self.telegram.token_datei = self.telegram.token_datei.expanduser()
+
+
+def lade_konfig(pfad: Path | None = None) -> WorkerKonfig:
+    if pfad is None:
+        umgebung = os.environ.get("HERMES_WORKER_CONFIG")
+        pfad = Path(umgebung) if umgebung else Path("~/.config/hermes-worker/config.yaml")
+    pfad = pfad.expanduser()
+    if not pfad.exists():
+        return WorkerKonfig()
+    roh = yaml.safe_load(pfad.read_text()) or {}
+    return WorkerKonfig.model_validate(roh)

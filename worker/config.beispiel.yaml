@@ -1,0 +1,27 @@
+# Beispiel-Konfiguration des Poll-Workers.
+# Nach /home/hermes-worker/config.yaml kopieren und anpassen;
+# Pfad kommt aus $HERMES_WORKER_CONFIG (siehe hermes-worker.service).
+
+board_url: "http://127.0.0.1:9119"
+poll_intervall_s: 30
+
+projekte_verzeichnis: "~/projekte"
+datenbank: "~/worker.db"
+
+aider_bin: "aider"
+coder_modell: "ollama_chat/qwen3-coder"
+aider_timeout_s: 1200        # 20 Minuten, harte Regel
+max_versuche: 3
+
+docker_speicher: "8g"
+docker_cpus: "4"
+
+# Spaltennamen nur überschreiben, wenn das Board abweicht:
+# spalten:
+#   eingang: "Eingang"
+#   ...
+
+telegram:
+  # Token liegt in einer Datei, nie Klartext in Config oder Repo:
+  token_datei: "~/telegram-token"
+  chat_id: "123456789"

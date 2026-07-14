@@ -94,7 +94,9 @@ Erst nach stabilem Betrieb.
 
 ## 4. Session-Reihenfolge (= Bauplan Punkt 1–4, in Arbeitspakete übersetzt)
 
-### Session 1 — Web-Skeleton (`skeleton-web`, eigenes Repo)
+### Session 1 — Web-Skeleton (`skeleton-web`, eigenes Repo) — offen
+*Voraussetzung: Repo `skeleton-web` auf GitHub anlegen und der
+Arbeitssession hinzufügen — es ist bewusst nicht Teil dieses Repos.*
 - Copier-Struktur
 - FastAPI + Jinja2 + HTMX + Tailwind-Gerüst, `base.html`
 - Komponentenkatalog: Card, Tabelle, Statusbadge, Formularfeld
@@ -104,21 +106,24 @@ Erst nach stabilem Betrieb.
 
 **Abnahmetest:** In 30 Minuten von Hand eine Seite darin bauen können.
 
-### Session 2 — Poll-Worker minimal (`worker/` in diesem Repo)
+### Session 2 — Poll-Worker minimal (`worker/` in diesem Repo) ✅ gebaut
 - Board-API pollen (30 s), Branch anlegen, Aider-Lauf mit Timeout (20 min)
 - `make check` im Container, Spalte umhängen
 - SQLite-Zustand (`worker.db`), Telegram-Ping
 - `hermes-worker`-User (sudo-los) und systemd-Unit
 
-### Session 3 — Vertragsschicht (`schemas/`, `intake-vorlagen/`)
-- Pydantic-Schema für `projekt.yaml`
-- Intake-Validierung (Pflichtfelder, Zurückweisen mit Kommentar)
-- die zwei Markdown-Vorlagen finalisieren
+### Session 3 — Vertragsschicht (`schemas/`, `intake-vorlagen/`) ✅ weitgehend gebaut
+- Pydantic-Schema für `projekt.yaml` ✅
+- Intake-Validierung (Pflichtfelder, Zurückweisen mit Kommentar) ✅
+- die zwei Markdown-Vorlagen ✅
+- Kartenformat (Front-Matter) ✅
 - Materialisierungs-Schritt: YAML → Karten via Board-API + `ARCHITEKTUR.md`
-  + rote Test-Stubs
+  + rote Test-Stubs — **offen, braucht `skeleton-web`**
 
 ### Session 4 — Skill `hermes-architekt` + Board
-- Skill mit `skill-creator` schreiben (Inhalt siehe 3.1)
+- Skill mit `skill-creator` schreiben (Inhalt siehe 3.1) —
+  inhaltlicher Entwurf liegt in `prompts/architekten-prompt.md`
+- Reviewer-Prompt-Entwurf liegt in `prompts/reviewer-prompt.md`
 - Kanban-Spalten anlegen (Port 9119)
 
 ### Session 5 — Pilot: Homelab-Statusseite
