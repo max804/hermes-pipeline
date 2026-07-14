@@ -1,0 +1,21 @@
+{# tabelle(spalten, zeilen) — spalten: Liste von Überschriften,
+   zeilen: Liste von Listen (bereits formatiert, keine Logik im Template). #}
+
+{% macro tabelle(spalten, zeilen) %}
+<div class="overflow-x-auto rounded-xl border border-slate-800">
+  <table class="w-full text-left text-sm">
+    <thead class="bg-slate-900 text-xs uppercase tracking-wider text-slate-400">
+      <tr>
+        {%- for spalte in spalten %}<th class="px-4 py-3 font-medium">{{ spalte }}</th>{% endfor -%}
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-800">
+      {%- for zeile in zeilen %}
+      <tr class="bg-slate-950 hover:bg-slate-900">
+        {%- for zelle in zeile %}<td class="px-4 py-3 text-slate-300">{{ zelle }}</td>{% endfor -%}
+      </tr>
+      {%- endfor %}
+    </tbody>
+  </table>
+</div>
+{% endmacro %}

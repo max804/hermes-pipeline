@@ -1,0 +1,9 @@
+/* Quelle für app/static/theme.css — bauen mit `make css`
+   (Tailwind-Standalone-CLI, kein Node im Projekt).
+
+   Der Scanner liest app/templates/ als Text: Klassennamen müssen dort
+   IMMER als Literale stehen (siehe Mapping in komponenten/layout.html),
+   nie zur Laufzeit zusammengesetzt werden. */
+
+@import "tailwindcss";
+@source "app/templates";

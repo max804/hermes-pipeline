@@ -13,14 +13,19 @@ hermes-pipeline/
 ├── ARCHITEKTUR.md      Systementwurf v2 (freigegeben zur Umsetzung) — die Wahrheit
 ├── ROADMAP.md          Orchestrierte Roadmap: Sessions, Aufteilung, Skill-Struktur
 ├── DECISIONS.md        Append-only-Log: Reviewer-Fails, Fix-Begründungen, Gate-Korrekturen
-├── worker/             Poll-Worker (Python, SQLite, systemd-Unit)          → Session 2
-├── schemas/            projekt.yaml-Pydantic-Schema, Intake-Validierung    → Session 3
-├── prompts/            Architekten-Prompt, Reviewer-Prompt                 → Session 3–4
-└── intake-vorlagen/    Die zwei Markdown-Templates (Neuprojekt / Änderung)
+├── worker/             Poll-Worker (Python, SQLite, systemd-Unit)
+├── schemas/            projekt.yaml-Pydantic-Schema, Kartenformat, Intake-Validierung
+├── prompts/            Architekten-Prompt, Reviewer-Prompt (Entwürfe)
+├── intake-vorlagen/    Die zwei Markdown-Templates (Neuprojekt / Änderung)
+└── templates/
+    └── skeleton-web/   Copier-Template der Web-Domäne — ⚠️ NUR ZUM ENTWERFEN hier
 ```
 
-Die **Skeletons sind bewusst eigene Repos** (`skeleton-web`, `skeleton-device-tool`),
-weil Copier sie als Template-Quelle braucht. Sie gehören nicht hierher.
+**⚠️ Skeleton-Abspaltung:** `templates/skeleton-web/` liegt zum Entwerfen im
+Monorepo. Vor dem ersten instanziierten Projekt muss es in ein eigenes Repo
+mit eigener Tag-Historie (`web-v0.1.0`, …) umziehen, weil `copier update`
+über Git-Tags des Template-Repos arbeitet (Details:
+`templates/skeleton-web/README.md`).
 
 ## Einstieg
 

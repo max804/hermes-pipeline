@@ -1,0 +1,21 @@
+{# grid(spalten=1..4) und sektion(titel) — beide als {% call %}-Blöcke.
+   WICHTIG: Die Spaltenklassen stehen hier als Literale im Mapping, damit der
+   Tailwind-Scanner sie findet — niemals Klassennamen zur Laufzeit
+   zusammensetzen. #}
+
+{% macro grid(spalten=3) %}
+{%- set klassen = {
+    1: "grid-cols-1",
+    2: "grid-cols-1 sm:grid-cols-2",
+    3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+    4: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4",
+} -%}
+<div class="grid gap-4 {{ klassen.get(spalten, klassen[3]) }}">{{ caller() }}</div>
+{% endmacro %}
+
+{% macro sektion(titel) %}
+<section class="space-y-4">
+  <h2 class="text-lg font-semibold text-slate-100">{{ titel }}</h2>
+  {{ caller() }}
+</section>
+{% endmacro %}

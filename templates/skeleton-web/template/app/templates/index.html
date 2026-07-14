@@ -1,0 +1,34 @@
+{# Beispielseite — nur aus Katalog-Komponenten gebaut. Dient zugleich als
+   Sichtprüfung des Katalogs; wird im echten Projekt durch die Karten des
+   Architekten ersetzt. #}
+{% extends "base.html" %}
+{% import "komponenten/katalog.html" as k %}
+
+{% block inhalt %}
+
+{% call k.sektion("Dienste") %}
+  {% call k.grid(3) %}
+    {% for dienst in dienste %}
+      {{ k.card(dienst.name, dienst.beschreibung, status=dienst.status) }}
+    {% endfor %}
+  {% endcall %}
+{% endcall %}
+
+{% call k.sektion("Letzte Prüfungen") %}
+  {{ k.tabelle(
+      ["Dienst", "Status", "Antwortzeit"],
+      pruefungen) }}
+{% endcall %}
+
+{% call k.sektion("Formular-Komponenten") %}
+  {% call k.card("Beispielformular") %}
+    <form class="space-y-4" hx-post="/partials/echo" hx-target="#echo">
+      {{ k.feld("name", "Name", pflicht=True) }}
+      {{ k.select("umgebung", "Umgebung", ["dev", "prod"], gewaehlt="dev") }}
+      {{ k.submit("Absenden") }}
+      <div id="echo"></div>
+    </form>
+  {% endcall %}
+{% endcall %}
+
+{% endblock %}

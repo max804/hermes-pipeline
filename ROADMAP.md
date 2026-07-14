@@ -94,17 +94,27 @@ Erst nach stabilem Betrieb.
 
 ## 4. Session-Reihenfolge (= Bauplan Punkt 1–4, in Arbeitspakete übersetzt)
 
-### Session 1 — Web-Skeleton (`skeleton-web`, eigenes Repo) — offen
-*Voraussetzung: Repo `skeleton-web` auf GitHub anlegen und der
-Arbeitssession hinzufügen — es ist bewusst nicht Teil dieses Repos.*
-- Copier-Struktur
-- FastAPI + Jinja2 + HTMX + Tailwind-Gerüst, `base.html`
-- Komponentenkatalog: Card, Tabelle, Statusbadge, Formularfeld
-- `Dockerfile.check`, `make check`
-- `frontend-design`-Ansatz einbeziehen, damit der Katalog nicht nach
-  Template-Einheitsbrei aussieht
+### Session 1 — Web-Skeleton ✅ gebaut (als `templates/skeleton-web/` in diesem Repo)
+*⚠️ Vor dem Pilotprojekt in ein eigenes Repo `skeleton-web` mit eigener
+Tag-Historie (`web-v0.1.0`, …) abspalten — `copier update` arbeitet über
+Git-Tags des Template-Repos, eine mit Worker-Releases geteilte Tag-Historie
+wird beim Update alter Projekte unentwirrbar. Solange kein instanziiertes
+Projekt auf die Template-URL zeigt, ist der Umzug trivial.*
+- Copier-Struktur ✅ (`copier.yml`: projektname, beschreibung, port,
+  static_only, caddy_domain; nur `*.jinja` wird gerendert)
+- FastAPI + Jinja2 + HTMX + Tailwind-Gerüst, `base.html` ✅
+  (htmx 2.0.4 vendored, `theme.css` kompiliertes Tailwind v4 —
+  kein Node, kein CDN im Projekt)
+- Komponentenkatalog ✅: card, tabelle, statusbadge, feld/select/submit,
+  grid, sektion — Sammel-Import über `komponenten/katalog.html`
+- `BLAUPAUSE.md` (Vertrag) + `AGENTS.md` (Coder-Leitplanken) ✅
+- `Dockerfile.check`, `make check` (ruff + pytest: Smoke über alle Routen,
+  strikte HTML5-Validierung, Karten-Tests) ✅
+- `deploy.sh` (Portainer-API, Token per Dateipfad, Caddy-Snippet nur
+  generiert) ✅
 
-**Abnahmetest:** In 30 Minuten von Hand eine Seite darin bauen können.
+**Abnahmetest:** In 30 Minuten von Hand eine Seite darin bauen können —
+**steht noch aus** (macht der Mensch, nicht die Maschine).
 
 ### Session 2 — Poll-Worker minimal (`worker/` in diesem Repo) ✅ gebaut
 - Board-API pollen (30 s), Branch anlegen, Aider-Lauf mit Timeout (20 min)

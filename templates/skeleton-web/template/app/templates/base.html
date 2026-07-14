@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titel %}{{ titel }}{% endblock %}</title>
+  <link rel="stylesheet" href="/static/theme.css">
+  <script src="/static/htmx.min.js" defer></script>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-300 antialiased">
+  <header class="border-b border-slate-800">
+    <nav class="mx-auto flex max-w-6xl items-center gap-6 px-6 py-4">
+      <a href="/" class="text-sm font-bold tracking-wide text-slate-100">{{ titel }}</a>
+      {% block nav %}{% endblock %}
+    </nav>
+  </header>
+  <main class="mx-auto max-w-6xl space-y-8 px-6 py-8">
+    {% block inhalt %}{% endblock %}
+  </main>
+  <footer class="mx-auto max-w-6xl px-6 py-6 text-xs text-slate-600">
+    {{ titel }}
+  </footer>
+</body>
+</html>

@@ -1,0 +1,28 @@
+{# feld(name, label, typ="text", wert="", pflicht=False)
+   select(name, label, optionen, gewaehlt="")
+   submit(text="Speichern") #}
+
+{% macro feld(name, label, typ="text", wert="", pflicht=False) %}
+<label class="block space-y-1.5">
+  <span class="text-xs font-medium uppercase tracking-wider text-slate-400">{{ label }}{% if pflicht %} *{% endif %}</span>
+  <input type="{{ typ }}" name="{{ name }}" value="{{ wert }}" {% if pflicht %}required{% endif %}
+         class="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600">
+</label>
+{% endmacro %}
+
+{% macro select(name, label, optionen, gewaehlt="") %}
+<label class="block space-y-1.5">
+  <span class="text-xs font-medium uppercase tracking-wider text-slate-400">{{ label }}</span>
+  <select name="{{ name }}"
+          class="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-600">
+    {%- for option in optionen %}
+    <option value="{{ option }}" {% if option == gewaehlt %}selected{% endif %}>{{ option }}</option>
+    {%- endfor %}
+  </select>
+</label>
+{% endmacro %}
+
+{% macro submit(text="Speichern") %}
+<button type="submit"
+        class="rounded-lg bg-sky-700 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-slate-950">{{ text }}</button>
+{% endmacro %}

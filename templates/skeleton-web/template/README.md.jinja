@@ -1,0 +1,18 @@
+# {{ projektname }}
+
+{{ beschreibung }}
+
+Instanziiert aus `skeleton-web` (Hermes-Pipeline).
+{% if static_only %}Minimalausprägung: statische Seiten, keine dynamischen Routen außer Auslieferung.{% endif %}
+
+- **Wahrheit:** `ARCHITEKTUR.md` (füllt der Architekt), `DECISIONS.md` (Append-only)
+- **Regeln:** `BLAUPAUSE.md` (Architektur-Vertrag), `AGENTS.md` (Coder-Leitplanken)
+
+## Befehle
+
+| Befehl | Zweck |
+|---|---|
+| `make check` | Definition of Done: ruff + pytest (Smoke, HTML-Validierung, Karten-Tests) |
+| `make run` | Entwicklungsserver auf Port {{ port }} |
+| `make css` | Tailwind neu bauen (nur nach Skeleton-Änderungen am Katalog) |
+| `make deploy` | Stack per Portainer-API ausrollen (`deploy.sh`) |

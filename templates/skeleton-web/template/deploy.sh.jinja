@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+# Deployment per Portainer-API (ARCHITEKTUR.md §9) — die letzte Karte jedes
+# Projekts. Sicherheitsleitplanken:
+#   - scoped Portainer-Token NUR für Stack-Operationen, per Dateipfad
+#   - Caddy: Snippet wird nur GENERIERT, Reload erst nach menschlichem OK
+#
+# API-Pfade gegen die laufende Portainer-Version prüfen (Mechanik liegt im
+# Portainer-Admin-Skill dokumentiert).
+set -euo pipefail
+
+PORTAINER_URL="${PORTAINER_URL:-https://192.168.178.56:9443}"
+TOKEN_DATEI="${PORTAINER_TOKEN_DATEI:-$HOME/.portainer-token}"
+ENDPOINT_ID="${PORTAINER_ENDPOINT_ID:-1}"
+STACK_NAME="{{ projektname }}"
+APP_PORT="{{ port }}"
+CADDY_DOMAIN="{{ caddy_domain }}"
+
+if [[ ! -f "$TOKEN_DATEI" ]]; then
+    echo "FEHLER: Portainer-Token-Datei fehlt: $TOKEN_DATEI" >&2
+    exit 1
+fi
+TOKEN="$(<"$TOKEN_DATEI")"
+
+api() {
+    local methode="$1" pfad="$2"
+    shift 2
+    curl -sfk -X "$methode" -H "X-API-Key: $TOKEN" "$PORTAINER_URL/api$pfad" "$@"
+}
+
+compose_json() {
+    python3 - <<'PY'
+import json, pathlib
+print(json.dumps(pathlib.Path("compose.yaml").read_text()))
+PY
+}
+
+stack_id="$(api GET "/stacks" | python3 -c "
+import json, sys
+stacks = json.load(sys.stdin)
+treffer = [s['Id'] for s in stacks if s.get('Name') == '$STACK_NAME']
+print(treffer[0] if treffer else '')
+")"
+
+if [[ -n "$stack_id" ]]; then
+    echo "Aktualisiere Stack $STACK_NAME (Id $stack_id) …"
+    api PUT "/stacks/$stack_id?endpointId=$ENDPOINT_ID" \
+        -H "Content-Type: application/json" \
+        -d "{\"stackFileContent\": $(compose_json), \"pullImage\": false}" > /dev/null
+else
+    echo "Lege Stack $STACK_NAME neu an …"
+    api POST "/stacks/create/standalone/string?endpointId=$ENDPOINT_ID" \
+        -H "Content-Type: application/json" \
+        -d "{\"name\": \"$STACK_NAME\", \"stackFileContent\": $(compose_json)}" > /dev/null
+fi
+
+echo "Warte auf Healthcheck …"
+for _ in $(seq 1 30); do
+    if curl -sf "http://192.168.178.56:$APP_PORT/healthz" > /dev/null; then
+        echo "Healthcheck grün: http://192.168.178.56:$APP_PORT/healthz"
+        break
+    fi
+    sleep 2
+done
+
+if [[ -n "$CADDY_DOMAIN" ]]; then
+    cat > caddy-snippet.txt <<SNIPPET
+$CADDY_DOMAIN {
+    reverse_proxy 192.168.178.56:$APP_PORT
+}
+SNIPPET
+    echo ""
+    echo "Caddy-Snippet nach caddy-snippet.txt geschrieben."
+    echo "DNS/Proxy ist Handarbeit: Snippet prüfen, manuell einspielen,"
+    echo "Caddy-Reload erst nach eigener Bestätigung ausführen."
+fi

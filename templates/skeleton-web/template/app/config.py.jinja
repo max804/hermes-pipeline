@@ -1,0 +1,19 @@
+"""Einstellungen aus der Umgebung — keine Klartext-Secrets im Repo.
+
+Secrets (Tokens, Passwörter) kommen als Dateipfad-ENV (`…_DATEI`) und
+werden erst zur Laufzeit gelesen.
+"""
+
+from __future__ import annotations
+
+import os
+from dataclasses import dataclass, field
+
+
+@dataclass(frozen=True)
+class Einstellungen:
+    titel: str = field(default_factory=lambda: os.getenv("APP_TITEL", "{{ projektname }}"))
+    port: int = field(default_factory=lambda: int(os.getenv("APP_PORT", "{{ port }}")))
+
+
+einstellungen = Einstellungen()

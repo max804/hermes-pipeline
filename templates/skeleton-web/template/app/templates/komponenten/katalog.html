@@ -1,0 +1,25 @@
+{# DER Komponentenkatalog — Sammel-Import für Seiten:
+
+     {% import "komponenten/katalog.html" as k %}
+
+   Danach: k.card(), k.tabelle(), k.statusbadge(), k.feld(), k.select(),
+   k.submit(), {% call k.grid(3) %}, {% call k.sektion("…") %}.
+
+   Die {% set %}-Zeilen re-exportieren die importierten Makros (Jinja
+   exportiert Importe nicht transitiv). Neue Komponenten entstehen NUR per
+   Skeleton-Change-Karte: Makro-Datei + Import hier + Signatur in BLAUPAUSE.md. #}
+
+{% from "komponenten/card.html" import card %}
+{% from "komponenten/badge.html" import statusbadge %}
+{% from "komponenten/tabelle.html" import tabelle %}
+{% from "komponenten/formular.html" import feld, select, submit %}
+{% from "komponenten/layout.html" import grid, sektion %}
+
+{% set card = card %}
+{% set statusbadge = statusbadge %}
+{% set tabelle = tabelle %}
+{% set feld = feld %}
+{% set select = select %}
+{% set submit = submit %}
+{% set grid = grid %}
+{% set sektion = sektion %}

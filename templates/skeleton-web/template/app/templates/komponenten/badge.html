@@ -1,0 +1,10 @@
+{# statusbadge(zustand) — zustand: ok | warn | fehler (alles andere: neutral) #}
+
+{% macro statusbadge(zustand) %}
+{%- set stile = {
+    "ok":     "bg-emerald-950 text-emerald-400 ring-emerald-800",
+    "warn":   "bg-amber-950 text-amber-400 ring-amber-800",
+    "fehler": "bg-red-950 text-red-400 ring-red-800",
+} -%}
+<span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 {{ stile.get(zustand, 'bg-slate-800 text-slate-300 ring-slate-700') }}">{{ zustand }}</span>
+{%- endmacro %}

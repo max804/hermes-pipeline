@@ -1,0 +1,15 @@
+{# card(titel, inhalt="", status=None) — Inhaltskachel, optional mit Statusbadge.
+   Verschachtelter Inhalt per {% call card("Titel") %}…{% endcall %}. #}
+{% from "komponenten/badge.html" import statusbadge %}
+
+{% macro card(titel, inhalt="", status=None) %}
+<div class="rounded-xl border border-slate-800 bg-slate-900 p-5 shadow-sm">
+  <div class="mb-3 flex items-center justify-between gap-3">
+    <h3 class="text-sm font-semibold tracking-wide text-slate-200">{{ titel }}</h3>
+    {% if status %}{{ statusbadge(status) }}{% endif %}
+  </div>
+  <div class="text-sm text-slate-400">
+    {%- if caller %}{{ caller() }}{% else %}{{ inhalt }}{% endif -%}
+  </div>
+</div>
+{% endmacro %}
