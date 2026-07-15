@@ -13,6 +13,7 @@ hermes-pipeline/
 ├── ARCHITEKTUR.md      Systementwurf v2 (freigegeben zur Umsetzung) — die Wahrheit
 ├── ROADMAP.md          Orchestrierte Roadmap: Sessions, Aufteilung, Skill-Struktur
 ├── DECISIONS.md        Append-only-Log: Reviewer-Fails, Fix-Begründungen, Gate-Korrekturen
+├── board/              Kanban-Board: Dashboard + Steuerung (FastAPI, HTMX, SQLite, Port 9119)
 ├── worker/             Poll-Worker (Python, SQLite, systemd-Unit)
 ├── schemas/            projekt.yaml-Pydantic-Schema, Kartenformat, Intake-Validierung
 ├── prompts/            Architekten-Prompt, Reviewer-Prompt (Entwürfe)

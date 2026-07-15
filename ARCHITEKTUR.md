@@ -37,7 +37,11 @@ Doku und Deployment sind keine eigenen Agenten, sondern Karten, die der Coder ab
 
 ## 3. Kanban-Board und Ablauf
 
-Das bestehende Hermes-Kanban (API auf Port 9119) bleibt das Board. Spalten:
+Das Board ist ein eigener Baustein der Pipeline: **hermes-board** (`board/`
+in diesem Repo) — FastAPI + Jinja2 + HTMX + SQLite auf Port 9119, Dashboard
+und Steuerung im Browser, API als fester Vertrag mit dem Worker.
+*(Änderung vom 15.07.2026: ursprünglich sollte das bestehende Hermes-Kanban
+weiterverwendet werden; Begründung in `DECISIONS.md`.)* Spalten:
 
 **Eingang → Architektur → Freigabe (Mensch) → Bereit → In Arbeit → Review → Done**, plus **Blockiert** für Eskalationen.
 

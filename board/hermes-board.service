@@ -1,0 +1,33 @@
+# systemd-Unit für das Hermes-Board.
+#
+# Installation (als root, einmalig):
+#   cp hermes-board.service /etc/systemd/system/
+#   systemctl daemon-reload && systemctl enable --now hermes-board
+#
+# Läuft unter demselben sudo-losen User wie der Worker; Board und Worker
+# teilen sich NICHT die Datenbank — das Board hat seine eigene
+# (hermes-board.db), der Worker seine (worker.db).
+
+[Unit]
+Description=Hermes Pipeline Kanban-Board
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=hermes-worker
+Group=hermes-worker
+Environment=HERMES_BOARD_DB=/home/hermes-worker/hermes-board.db
+Environment=HERMES_BOARD_PORT=9119
+Environment=HERMES_INTAKE_VORLAGEN=/home/hermes-worker/hermes-pipeline/intake-vorlagen
+ExecStart=/home/hermes-worker/.venv/bin/hermes-board
+Restart=on-failure
+RestartSec=5
+
+ProtectSystem=strict
+ReadWritePaths=/home/hermes-worker
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

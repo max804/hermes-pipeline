@@ -1,11 +1,10 @@
-"""Dünner Client für die Hermes-Kanban-Board-API (Port 9119).
+"""Dünner Client für die hermes-board-API (Port 9119, `board/` im Repo).
 
-ACHTUNG — Endpunkt-Annahmen: Die genauen Pfade der bestehenden Board-API
-sind hier angenommen und müssen beim ersten Test gegen das echte Board
-verifiziert werden. Wenn sie abweichen, ist DIESE Datei die einzige
-Anpassungsstelle; der Rest des Workers kennt nur die Methoden dieser Klasse.
+Die API ist ein beidseitig getesteter Vertrag: `board/tests/test_api.py`
+prüft die Serverseite mit exakt diesen Pfaden, und
+`worker/tests/test_board_integration.py` fährt DIESEN Client per HTTP gegen
+das echte Board. Änderungen nur beidseitig.
 
-Angenommene API:
     GET  /api/karten?spalte=<name>       → [{id, titel, beschreibung, spalte}]
                                            (Reihenfolge = Anlage-Reihenfolge)
     POST /api/karten                     {"titel", "beschreibung", "spalte"} → {id}

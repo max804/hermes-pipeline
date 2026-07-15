@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block inhalt %}
+<div id="board-rahmen"
+     hx-get="/partials/board"
+     hx-trigger="every 5s [!window.hermesZieht], board-refresh from:body"
+     hx-swap="innerHTML">
+  {% include "partials/board.html" %}
+</div>
+{% endblock %}

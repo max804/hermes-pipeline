@@ -137,9 +137,12 @@ Projekt auf die Template-URL zeigt, ist der Umzug trivial.*
   Entwurf in `prompts/architekten-prompt.md`.
 - Selbstvalidierung ✅: CLI `hermes-validiere` im Paket `hermes-schemas`
 - Reviewer-Prompt-Entwurf liegt in `prompts/reviewer-prompt.md`
-- Kanban-Spalten: Skript liegt bereit (`skripte/spalten-anlegen.py`) —
-  **Ausführung gegen das echte Board (Port 9119) offen**, dabei zugleich
-  die API-Endpunkt-Annahmen aus `worker/hermes_worker/board.py` verifizieren
+- Board ✅ (Entscheidung 15.07.2026, siehe `DECISIONS.md`): **eigenes
+  hermes-board** (`board/`) statt bestehendem Hermes-Kanban — Dashboard +
+  Steuerung (Drag & Drop, Intake-Vorlagen, Kommentare) auf Port 9119,
+  legt die acht Spalten beim ersten Start selbst an. Die früheren
+  API-Endpunkt-Annahmen des Workers sind damit ein beidseitig getesteter
+  Vertrag (Live-HTTP-Integrationstest) — der Verifikationspunkt entfällt.
 
 ### Session 5 — Pilot: Homelab-Statusseite
 - Intake-Karte ausfüllen (HTTP-Healthchecks für Portainer, n8n, Ollama,

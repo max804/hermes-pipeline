@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
-"""Kanban-Spalten der Pipeline anlegen (ARCHITEKTUR.md §3) — der triviale
-Teil von Session 4, einmalig auszuführen:
+"""Kanban-Spalten anlegen (ARCHITEKTUR.md §3).
+
+Seit hermes-board (`board/`) das Board stellt, ist dieses Skript nur noch
+für Sonderfälle nötig — das Board legt die acht Standard-Spalten beim
+ersten Start selbst an. Nutzbar z. B. für zusätzliche Spalten:
 
     python3 skripte/spalten-anlegen.py [board-url]
-
-ACHTUNG — Endpunkt-Annahme wie in worker/hermes_worker/board.py:
-    GET  /api/spalten            → [{"name": …}, …]
-    POST /api/spalten            {"name": "…"}
-Weicht das echte Board ab, hier UND in board.py anpassen — oder die acht
-Spalten schlicht von Hand anlegen (5 Minuten, gleiche Reihenfolge).
 """
 
 import sys

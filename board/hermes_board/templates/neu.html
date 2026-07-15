@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block titel %}Neue Karte · Hermes Board{% endblock %}
+
+{% block inhalt %}
+<div class="mx-auto max-w-3xl space-y-6">
+
+  <div class="flex items-center justify-between">
+    <a href="/" class="text-xs text-slate-500 hover:text-slate-300">← Board</a>
+    <div class="flex gap-2 text-xs">
+      <a href="/neu?vorlage=neu"
+         class="rounded-lg border px-3 py-1.5 {% if vorlage == 'neu' %}border-sky-600 text-sky-400{% else %}border-slate-700 text-slate-400 hover:border-slate-500{% endif %}">Vorlage: Neues Projekt</a>
+      <a href="/neu?vorlage=aenderung"
+         class="rounded-lg border px-3 py-1.5 {% if vorlage == 'aenderung' %}border-sky-600 text-sky-400{% else %}border-slate-700 text-slate-400 hover:border-slate-500{% endif %}">Vorlage: Änderung</a>
+      <a href="/neu"
+         class="rounded-lg border px-3 py-1.5 {% if not vorlage %}border-sky-600 text-sky-400{% else %}border-slate-700 text-slate-400 hover:border-slate-500{% endif %}">Leer</a>
+    </div>
+  </div>
+
+  <form method="post" action="/neu" class="space-y-4 rounded-xl border border-slate-800 bg-slate-900 p-6">
+    <label class="block space-y-1.5">
+      <span class="text-xs font-medium uppercase tracking-wider text-slate-400">Titel *</span>
+      <input name="titel" required
+             class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200">
+    </label>
+    <label class="block space-y-1.5">
+      <span class="text-xs font-medium uppercase tracking-wider text-slate-400">Spalte</span>
+      <select name="spalte"
+              class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200">
+        {% for name in spalten_namen %}
+        <option value="{{ name }}">{{ name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label class="block space-y-1.5">
+      <span class="text-xs font-medium uppercase tracking-wider text-slate-400">Beschreibung (Markdown)</span>
+      <textarea name="beschreibung" rows="22" spellcheck="false"
+                class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 font-mono text-xs text-slate-200">{{ vorbelegung }}</textarea>
+    </label>
+    <button type="submit"
+            class="rounded-lg bg-sky-700 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-600">Karte anlegen</button>
+  </form>
+
+</div>
+{% endblock %}

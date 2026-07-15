@@ -1,0 +1,30 @@
+{% set akzente = {
+    "Eingang":     "text-slate-300",
+    "Architektur": "text-sky-400",
+    "Freigabe":    "text-amber-400",
+    "Bereit":      "text-slate-300",
+    "In Arbeit":   "text-sky-400",
+    "Review":      "text-violet-400",
+    "Done":        "text-emerald-400",
+    "Blockiert":   "text-red-400",
+} %}
+<div class="flex items-start gap-4 overflow-x-auto pb-4">
+  {% for name, karten in spalten %}
+  <section class="w-72 shrink-0 rounded-xl border border-slate-800 bg-slate-900/60"
+           data-spalte="{{ name }}">
+    <header class="flex items-center justify-between border-b border-slate-800 px-4 py-3">
+      <h2 class="text-xs font-semibold uppercase tracking-wider {{ akzente.get(name, 'text-slate-400') }}">{{ name }}</h2>
+      <span class="rounded-full bg-slate-800 px-2 py-0.5 text-xs text-slate-400">{{ karten|length }}</span>
+    </header>
+    <div class="flex min-h-16 flex-col gap-2 p-3">
+      {% for karte in karten %}
+      <a href="/karten/{{ karte.id }}" draggable="true" data-karte="{{ karte.id }}"
+         class="block cursor-grab rounded-lg border border-slate-800 bg-slate-950 p-3 hover:border-slate-600 active:cursor-grabbing">
+        <div class="text-sm font-medium text-slate-200">{{ karte.titel }}</div>
+        <div class="mt-1 text-xs text-slate-500">#{{ karte.id }} · {{ karte.aktualisiert[:16] | replace("T", " ") }}</div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+</div>

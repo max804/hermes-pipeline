@@ -5,8 +5,9 @@
 
 setup:
 	python3 -m venv .venv
-	.venv/bin/pip install -q -e "schemas[dev]" -e "worker[dev]"
+	.venv/bin/pip install -q -e "schemas[dev]" -e "worker[dev]" -e "board[dev]"
 
 check:
 	.venv/bin/python -m pytest schemas/tests -q
 	cd worker && ../.venv/bin/python -m pytest tests -q
+	cd board && ../.venv/bin/python -m pytest tests -q

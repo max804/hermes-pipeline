@@ -26,6 +26,18 @@ ARCHITEKTUR.md lässt sich vollständig aus ihr rendern. Begründung: §3.4
 verlangt selbst „erzeugt der Worker deterministisch" — der Aider-Lauf wäre
 eine unnötige Fehlerquelle. Weniger Teile, gleiche Wirkung.
 
+## 2026-07-15 · [Aufbau: Eigenes Board statt bestehendes Hermes-Kanban]
+
+Entscheidung des Betreibers: Das Board wird nicht das bestehende
+Hermes-Kanban, sondern ein eigener Pipeline-Baustein (`board/`,
+FastAPI + SQLite + HTMX, Port 9119 bleibt). Gewinn: Die zuvor nur
+angenommenen API-Endpunkte des Workers sind jetzt ein von uns
+kontrollierter, beidseitig getesteter Vertrag (Integrationstest fährt den
+echten Worker-Client per HTTP gegen das echte Board) — der größte
+Verifikationspunkt vor dem Piloten entfällt. Dashboard und Steuerung
+(Intake-Formulare mit Vorlagen, Freigabe per Drag & Drop, Kommentare der
+Agenten) laufen im Browser. ARCHITEKTUR.md §3 wurde aktualisiert.
+
 ## 2026-07-15 · [Aufbau: Test-Stub-Staging]
 
 Alle Stubs sofort scharf zu materialisieren hätte einen Widerspruch erzeugt:

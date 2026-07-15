@@ -1,0 +1,56 @@
+/* Quelle für hermes_board/static/theme.css — bauen wie im Skeleton mit der
+   Tailwind-Standalone-CLI (kein Node im Projekt):
+   tailwindcss -i tailwind.input.css -o hermes_board/static/theme.css --minify */
+
+@import "tailwindcss";
+@source "hermes_board/templates";
+
+/* Markdown-Ausgabe (Kartenbeschreibungen, Kommentare) */
+.markdown {
+  color: var(--color-slate-300);
+}
+.markdown h1, .markdown h2, .markdown h3 {
+  color: var(--color-slate-100);
+  font-weight: 600;
+  margin: 1rem 0 0.5rem;
+}
+.markdown h1 { font-size: 1.05rem; }
+.markdown h2 { font-size: 0.95rem; }
+.markdown h3 { font-size: 0.875rem; }
+.markdown p { margin: 0.5rem 0; }
+.markdown ul, .markdown ol { margin: 0.5rem 0 0.5rem 1.25rem; }
+.markdown ul { list-style: disc; }
+.markdown ol { list-style: decimal; }
+.markdown li { margin: 0.15rem 0; }
+.markdown a { color: var(--color-sky-400); text-decoration: underline; }
+.markdown code {
+  background: var(--color-slate-950);
+  border: 1px solid var(--color-slate-800);
+  border-radius: 0.25rem;
+  padding: 0.1rem 0.3rem;
+  font-size: 0.75rem;
+}
+.markdown pre {
+  background: var(--color-slate-950);
+  border: 1px solid var(--color-slate-800);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  overflow-x: auto;
+  margin: 0.5rem 0;
+}
+.markdown pre code { border: none; background: none; padding: 0; }
+.markdown table { border-collapse: collapse; margin: 0.5rem 0; }
+.markdown th, .markdown td {
+  border: 1px solid var(--color-slate-800);
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  text-align: left;
+}
+.markdown th { color: var(--color-slate-400); background: var(--color-slate-900); }
+.markdown input[type="checkbox"] { margin-right: 0.35rem; }
+.markdown blockquote {
+  border-left: 3px solid var(--color-slate-700);
+  padding-left: 0.75rem;
+  color: var(--color-slate-400);
+  margin: 0.5rem 0;
+}
