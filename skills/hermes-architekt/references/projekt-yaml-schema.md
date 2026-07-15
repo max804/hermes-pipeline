@@ -49,7 +49,7 @@ in Feldnamen sind Validierungsfehler, keine stillen No-ops).
 
 | Domäne | Wurzeln |
 |---|---|
-| `web` | `app/`, `tests/`, `deploy/`, `ARCHITEKTUR.md`, `README.md` |
+| `web` | `app/`, `tests/`, `deploy.sh`, `compose.yaml`, `ARCHITEKTUR.md`, `README.md` |
 | `device-tool` | `app/`, `tests/`, `device-profiles/`, `.github/workflows/`, `ARCHITEKTUR.md`, `README.md` |
 
 Änderungen am Namensraum sind Skeleton-Änderungen und werden in

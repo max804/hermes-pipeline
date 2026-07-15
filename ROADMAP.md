@@ -122,13 +122,14 @@ Projekt auf die Template-URL zeigt, ist der Umzug trivial.*
 - SQLite-Zustand (`worker.db`), Telegram-Ping
 - `hermes-worker`-User (sudo-los) und systemd-Unit
 
-### Session 3 — Vertragsschicht (`schemas/`, `intake-vorlagen/`) ✅ weitgehend gebaut
+### Session 3 — Vertragsschicht (`schemas/`, `intake-vorlagen/`) ✅ gebaut
 - Pydantic-Schema für `projekt.yaml` ✅
 - Intake-Validierung (Pflichtfelder, Zurückweisen mit Kommentar) ✅
 - die zwei Markdown-Vorlagen ✅
-- Kartenformat (Front-Matter) ✅
-- Materialisierungs-Schritt: YAML → Karten via Board-API + `ARCHITEKTUR.md`
-  + rote Test-Stubs — **offen, braucht `skeleton-web`**
+- Kartenformat (Front-Matter, inkl. `nur_lesen` für Test-Stubs) ✅
+- Materialisierung ✅: Freigabe-Karte → Copier + ARCHITEKTUR.md +
+  Stub-Staging (`.wartend`) + Karten via Board-API in topologischer
+  Reihenfolge (Abweichungen vom v2-Text begründet in `DECISIONS.md`)
 
 ### Session 4 — Skill `hermes-architekt` + Board ✅ weitgehend gebaut
 - Skill ✅: `skills/hermes-architekt/` (SKILL.md + Schema-Referenz +

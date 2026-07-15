@@ -33,6 +33,8 @@ class KartenMeta(BaseModel):
     projekt: str = Field(min_length=3)
     karte: str = Field(pattern=r"^K\d{2,3}$")
     dateien: list[str] = Field(min_length=1)
+    # Read-only-Kontext für den Aider-Lauf (z. B. der Test-Stub der Karte)
+    nur_lesen: list[str] = Field(default_factory=list)
 
 
 class KartenFormatFehler(Exception):

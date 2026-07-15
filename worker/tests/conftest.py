@@ -1,4 +1,5 @@
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -6,6 +7,8 @@ import pytest
 from hermes_worker.board import BoardKarte
 from hermes_worker.config import WorkerKonfig
 from hermes_worker.state import WorkerZustand
+
+REPO_WURZEL = Path(__file__).parents[2]
 
 
 class FakeBoard:
@@ -17,6 +20,11 @@ class FakeBoard:
 
     def lege_an(self, karten_id: str, spalte: str, beschreibung: str, titel: str = "") -> None:
         self.karten[karten_id] = BoardKarte(karten_id, titel, beschreibung, spalte)
+
+    def karte_anlegen(self, titel: str, beschreibung: str, spalte: str) -> str:
+        karten_id = f"neu-{len(self.karten) + 1}"
+        self.lege_an(karten_id, spalte, beschreibung, titel)
+        return karten_id
 
     def karten_in(self, spalte: str) -> list[BoardKarte]:
         return [k for k in self.karten.values() if k.spalte == spalte]
@@ -49,6 +57,8 @@ def konfig(tmp_path):
     return WorkerKonfig(
         projekte_verzeichnis=tmp_path / "projekte",
         datenbank=tmp_path / "worker.db",
+        copier_bin=str(Path(sys.executable).parent / "copier"),
+        template_quellen={"web": str(REPO_WURZEL / "templates" / "skeleton-web")},
     )
 
 

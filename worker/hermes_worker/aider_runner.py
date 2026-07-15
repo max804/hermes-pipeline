@@ -28,6 +28,7 @@ def fuehre_aider_aus(
     kartentext: str,
     dateien: list[str],
     letzte_pruefung: str = "",
+    nur_lesen: list[str] | None = None,
 ) -> AiderErgebnis:
     auftrag = kartentext
     if letzte_pruefung:
@@ -43,13 +44,13 @@ def fuehre_aider_aus(
         f.write(auftrag)
         auftragsdatei = f.name
 
+    lese_dateien = ["ARCHITEKTUR.md", "AGENTS.md", *(nur_lesen or [])]
     kommando = [
         konfig.aider_bin,
         "--yes-always",
         "--model", konfig.coder_modell,
         "--message-file", auftragsdatei,
-        "--read", "ARCHITEKTUR.md",
-        "--read", "AGENTS.md",
+        *(arg for pfad in lese_dateien for arg in ("--read", pfad)),
         *dateien,
     ]
     try:

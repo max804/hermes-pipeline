@@ -50,6 +50,13 @@ class WorkerKonfig(BaseModel):
     docker_speicher: str = "8g"
     docker_cpus: str = "4"
 
+    # Copier-Template-Quellen je Domäne (lokaler Pfad oder gh:owner/repo).
+    # Nach der Skeleton-Abspaltung auf die Repo-URLs umstellen.
+    copier_bin: str = "copier"
+    template_quellen: dict[str, str] = {
+        "web": "~/hermes/hermes-pipeline/templates/skeleton-web",
+    }
+
     spalten: Spalten = Spalten()
     telegram: TelegramKonfig = TelegramKonfig()
 

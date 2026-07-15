@@ -39,7 +39,7 @@ Erster Satz hier. Zweiter Satz hier. Dritter Satz hier.
 
 
 def _aider(timeout=False, exit_code=0):
-    def lauf(konfig, repo, kartentext, dateien, letzte_pruefung=""):
+    def lauf(konfig, repo, kartentext, dateien, letzte_pruefung="", nur_lesen=None):
         lauf.aufrufe.append({"kartentext": kartentext, "letzte_pruefung": letzte_pruefung})
         return AiderErgebnis(timeout=timeout, exit_code=exit_code, ausgabe_ende="")
     lauf.aufrufe = []

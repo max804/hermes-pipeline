@@ -7,6 +7,8 @@ Anpassungsstelle; der Rest des Workers kennt nur die Methoden dieser Klasse.
 
 Angenommene API:
     GET  /api/karten?spalte=<name>       → [{id, titel, beschreibung, spalte}]
+                                           (Reihenfolge = Anlage-Reihenfolge)
+    POST /api/karten                     {"titel", "beschreibung", "spalte"} → {id}
     POST /api/karten/<id>/verschieben    {"spalte": "<name>"}
     POST /api/karten/<id>/kommentare     {"text": "…"}
 """
@@ -47,6 +49,15 @@ class Board:
             )
             for k in antwort.json()
         ]
+
+    def karte_anlegen(self, titel: str, beschreibung: str, spalte: str) -> str:
+        antwort = requests.post(
+            f"{self.basis_url}/api/karten",
+            json={"titel": titel, "beschreibung": beschreibung, "spalte": spalte},
+            timeout=self.timeout_s,
+        )
+        antwort.raise_for_status()
+        return str(antwort.json()["id"])
 
     def verschiebe(self, karten_id: str, spalte: str) -> None:
         antwort = requests.post(

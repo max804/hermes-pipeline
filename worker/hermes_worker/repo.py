@@ -40,6 +40,26 @@ def beginne_karte(repo: Path, branch: str) -> None:
         _git(repo, "checkout", "-b", branch)
 
 
+def aktiviere_test_stub(repo: Path, karten_id: str) -> bool:
+    """Materialisierte Stubs liegen als tests/test_karten/….py.wartend, damit
+    `make check` nicht an den roten Tests ALLER späteren Karten scheitert.
+    Beim Start der Karte wird ihr Stub scharfgeschaltet und committet."""
+    nummer = karten_id.lstrip("K")
+    wartend = repo / "tests" / "test_karten" / f"test_karte_{nummer}.py.wartend"
+    ziel = wartend.with_suffix("")  # .py
+    if not wartend.exists():
+        return ziel.exists()  # schon aktiviert (Fix-Runde) oder nie materialisiert
+    _git(repo, "mv", str(wartend.relative_to(repo)), str(ziel.relative_to(repo)))
+    _git(repo, "commit", "-m", f"[{karten_id}] Test-Stub aktiviert")
+    return True
+
+
+def commit_alle(repo: Path, botschaft: str) -> None:
+    _git(repo, "add", "-A")
+    if _git(repo, "status", "--porcelain"):  # leer = nichts zu committen
+        _git(repo, "commit", "-m", botschaft)
+
+
 def verwerfe_branch(repo: Path, branch: str) -> None:
     """Abbruch/Timeout: Branch verwerfen, Arbeitskopie sauber auf main."""
     subprocess.run(

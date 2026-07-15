@@ -54,9 +54,19 @@ worker/
 3. `hermes-worker`-User anlegen (Anleitung im Kopf der systemd-Unit),
    Config nach `/home/hermes-worker/config.yaml`.
 
-## Noch offen (nächste Session)
+## Materialisierung (`hermes_worker/materialisierung.py`)
 
-- **Materialisierung** (ARCHITEKTUR.md §3.4): Freigabe-Karte → Copier,
-  Karten via Board-API, ARCHITEKTUR.md + rote Test-Stubs. Braucht das
-  existierende `skeleton-web`-Repo.
-- Squash-Merge nach Review (v1: manuell nach Review-Spalte)
+Eine freigegebene Karte, deren Beschreibung eine valide projekt.yaml trägt
+(roh oder als ```yaml-Block), wird vom Menschen nach *Bereit* gezogen. Der
+Worker erkennt sie und erzeugt deterministisch: Repo per Copier
+(`template_quellen` in der Config), projekt.yaml + gerenderte ARCHITEKTUR.md
+im Repo, Test-Stubs als `…py.wartend` (scharfgeschaltet erst beim Start der
+jeweiligen Karte — Begründung: DECISIONS.md), Commit, Coder-Karten in
+topologischer Reihenfolge nach *Bereit*. Change-Projekte (Repo existiert):
+keine Instanziierung, ARCHITEKTUR.md bleibt unangetastet.
+
+## Noch offen
+
+- Squash-Merge nach Review (v1: manuell aus der Review-Spalte)
+- Reviewer-Lauf (Aider /ask mit Zweitmodell) — nach der Modellwahl
+  per Bug-Diff-Test

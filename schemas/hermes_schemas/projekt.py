@@ -20,7 +20,7 @@ PROJEKTNAME_MUSTER = re.compile(r"^[a-z][a-z0-9-]{2,49}$")
 # Erlaubte Pfad-Wurzeln je Domäne. Muss zum jeweiligen Skeleton passen —
 # wenn sich dort der Zuschnitt ändert, ist dies die einzige Stelle hier.
 SKELETON_NAMENSRAUM: dict[str, tuple[str, ...]] = {
-    "web": ("app/", "tests/", "deploy/", "ARCHITEKTUR.md", "README.md"),
+    "web": ("app/", "tests/", "deploy.sh", "compose.yaml", "ARCHITEKTUR.md", "README.md"),
     "device-tool": (
         "app/",
         "tests/",

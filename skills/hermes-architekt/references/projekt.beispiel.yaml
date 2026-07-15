@@ -1,5 +1,12 @@
 # Beispiel einer validen projekt.yaml — Referenz für den Architekten-Skill
 # (Pilotprojekt aus ARCHITEKTUR.md §11: Homelab-Statusseite)
+#
+# Hinweise:
+# - `dateien` sind die Dateien, die der Coder ÄNDERN darf. Der Test-Stub
+#   gehört NICHT hinein — er wird nach tests/test_karten/test_karte_<nr>.py
+#   materialisiert und ist für den Coder read-only.
+# - Kartenreihenfolge = Abarbeitungsreihenfolge (zyklenfrei, aufeinander
+#   aufbauend).
 
 projekt:
   name: homelab-status
@@ -11,9 +18,9 @@ projekt:
 architektur:
   module:
     - "app/healthchecks.py — asynchrone HTTP-Prüfungen mit Timeout"
-    - "app/routen/status.py — eine Route, rendert das Kachel-Grid"
+    - "app/routes/status.py — eine Route, rendert das Kachel-Grid"
   datenmodell: >
-    Dienst(name, url, status: ok|fehler|timeout, antwortzeit_ms) — nur im
+    Dienst(name, url, status: ok|warn|fehler, antwortzeit_ms) — nur im
     Speicher, keine Persistenz.
   routen:
     - "GET / — Kachel-Dashboard"
@@ -28,28 +35,25 @@ karten:
     ziel: HTTP-Healthchecks für konfigurierte Dienste mit Timeout implementieren.
     dateien:
       - app/healthchecks.py
-      - tests/test_karte_01.py
     akzeptanz:
-      - pytest tests/test_karte_01.py läuft grün
+      - pytest tests/test_karten/test_karte_01.py läuft grün
       - Timeout eines Dienstes blockiert die anderen Prüfungen nicht
     abhaengig_von: []
     test_stub: |
-      import pytest
       from app.healthchecks import pruefe_dienst
 
-      @pytest.mark.asyncio
-      async def test_timeout_liefert_status_timeout():
-          ergebnis = await pruefe_dienst("http://10.255.255.1:9", timeout_s=0.2)
-          assert ergebnis.status == "timeout"
+      def test_timeout_liefert_status_fehler():
+          ergebnis = pruefe_dienst("http://10.255.255.1:9", timeout_s=0.2)
+          assert ergebnis.status == "fehler"
 
   - id: K02
     titel: Status-Seite mit Kachel-Grid
     ziel: Dashboard-Route rendert je Dienst eine Katalog-Card mit Statusbadge.
     dateien:
-      - app/routen/status.py
-      - tests/test_karte_02.py
+      - app/routes/status.py
+      - app/templates/status.html
     akzeptanz:
-      - pytest tests/test_karte_02.py läuft grün
+      - pytest tests/test_karten/test_karte_02.py läuft grün
       - GET / liefert 200 und enthält je Dienst eine Kachel
     abhaengig_von: [K01]
     test_stub: |
@@ -66,8 +70,8 @@ karten:
     titel: Deploy-Karte
     ziel: Stack per deploy.sh über die Portainer-API ausrollen und Healthcheck prüfen.
     dateien:
-      - deploy/deploy.sh
-      - tests/test_karte_03.py
+      - deploy.sh
+      - compose.yaml
     akzeptanz:
       - deploy.sh nutzt das scoped Token per Dateipfad, nie Klartext im Repo
       - Healthcheck über die echte URL antwortet mit 200
@@ -76,4 +80,4 @@ karten:
       import subprocess
 
       def test_deploy_script_syntax():
-          assert subprocess.run(["bash", "-n", "deploy/deploy.sh"]).returncode == 0
+          assert subprocess.run(["bash", "-n", "deploy.sh"]).returncode == 0

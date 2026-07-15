@@ -16,6 +16,12 @@ max_versuche: 3
 docker_speicher: "8g"
 docker_cpus: "4"
 
+# Copier-Template-Quellen je Domäne. Solange das Skeleton im Monorepo
+# liegt, ein lokaler Pfad; nach der Abspaltung: "gh:max804/skeleton-web".
+copier_bin: "copier"
+template_quellen:
+  web: "~/hermes/hermes-pipeline/templates/skeleton-web"
+
 # Spaltennamen nur überschreiben, wenn das Board abweicht:
 # spalten:
 #   eingang: "Eingang"

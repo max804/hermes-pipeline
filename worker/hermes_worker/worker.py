@@ -24,7 +24,9 @@ from typing import Callable, Protocol
 
 from hermes_schemas.intake import pruefe_intake
 from hermes_schemas.karte import KartenFormatFehler, lade_kartenmeta
+from hermes_schemas.projekt import ProjektValidierungsFehler
 
+from hermes_worker import materialisierung
 from hermes_worker import repo as git
 from hermes_worker.aider_runner import AiderErgebnis, fuehre_aider_aus
 from hermes_worker.board import BoardKarte
@@ -38,6 +40,7 @@ log = logging.getLogger(__name__)
 
 class BoardSchnittstelle(Protocol):
     def karten_in(self, spalte: str) -> list[BoardKarte]: ...
+    def karte_anlegen(self, titel: str, beschreibung: str, spalte: str) -> str: ...
     def verschiebe(self, karten_id: str, spalte: str) -> None: ...
     def kommentiere(self, karten_id: str, text: str) -> None: ...
 
@@ -112,6 +115,11 @@ class Worker:
         try:
             meta, kartentext = lade_kartenmeta(karte.beschreibung)
         except KartenFormatFehler as e:
+            # Keine Coder-Karte — vielleicht eine freigegebene projekt.yaml?
+            yaml_text = materialisierung.extrahiere_projekt_yaml(karte.beschreibung)
+            if yaml_text is not None:
+                self._materialisiere(karte, yaml_text)
+                return
             self.board.kommentiere(karte.id, f"Kartenformat ungültig: {e}")
             self.board.verschiebe(karte.id, self.konfig.spalten.blockiert)
             return
@@ -132,12 +140,14 @@ class Worker:
 
         try:
             git.beginne_karte(repo_pfad, branch)
+            git.aktiviere_test_stub(repo_pfad, meta.karte)
             ergebnis = self._aider(
                 self.konfig,
                 repo_pfad,
                 kartentext,
                 meta.dateien,
                 letzte_pruefung=self.zustand.letzte_pruefung(karte.id),
+                nur_lesen=meta.nur_lesen,
             )
             if ergebnis.timeout:
                 self._nach_abbruch(karte, meta.projekt, repo_pfad, branch, "20-Minuten-Timeout")
@@ -181,6 +191,32 @@ class Worker:
             )
             self.board.verschiebe(karte.id, self.konfig.spalten.bereit)
             log.info("karte %s rot, versuch %d, zurueck auf bereit", karte.id, versuche)
+
+    def _materialisiere(self, karte: BoardKarte, yaml_text: str) -> None:
+        """Freigegebene projekt.yaml-Karte: Repo, Stubs und Coder-Karten erzeugen."""
+        self.board.verschiebe(karte.id, self.konfig.spalten.in_arbeit)
+        try:
+            projekt = materialisierung.materialisiere(self.konfig, self.board, yaml_text)
+        except ProjektValidierungsFehler as e:
+            # Sollte am Gate nicht mehr passieren — trotzdem sauber melden.
+            self.board.kommentiere(karte.id, e.als_kommentar())
+            self.board.verschiebe(karte.id, self.konfig.spalten.blockiert)
+            return
+        except materialisierung.MaterialisierungsFehler as e:
+            self.board.kommentiere(karte.id, f"Materialisierung fehlgeschlagen: {e}")
+            self.board.verschiebe(karte.id, self.konfig.spalten.blockiert)
+            self._melde(
+                self.konfig.telegram,
+                f"Hermes: Materialisierung der Karte {karte.id} fehlgeschlagen.",
+            )
+            return
+        self.board.kommentiere(
+            karte.id,
+            f"Materialisiert: `{projekt.projekt.name}` mit {len(projekt.karten)} Karten "
+            f"in '{self.konfig.spalten.bereit}'.",
+        )
+        self.board.verschiebe(karte.id, self.konfig.spalten.done)
+        log.info("projekt %s materialisiert (%d karten)", projekt.projekt.name, len(projekt.karten))
 
     def _nach_abbruch(self, karte, projekt: str, repo_pfad, branch: str, grund: str) -> None:
         """Abbruch/Timeout: Branch verwerfen, zurück auf *Bereit*, Zähler +1."""
