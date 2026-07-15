@@ -17,6 +17,9 @@ hermes-pipeline/
 ├── schemas/            projekt.yaml-Pydantic-Schema, Kartenformat, Intake-Validierung
 ├── prompts/            Architekten-Prompt, Reviewer-Prompt (Entwürfe)
 ├── intake-vorlagen/    Die zwei Markdown-Templates (Neuprojekt / Änderung)
+├── skills/
+│   └── hermes-architekt/  Skill der Architekten-Rolle (selbsttragend, installierbar)
+├── skripte/            Einmal-Werkzeuge (Kanban-Spalten anlegen)
 └── templates/
     └── skeleton-web/   Copier-Template der Web-Domäne — ⚠️ NUR ZUM ENTWERFEN hier
 ```

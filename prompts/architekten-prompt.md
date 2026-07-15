@@ -1,7 +1,8 @@
 # Architekten-Prompt (Entwurf für den Skill `hermes-architekt`)
 
-<!-- Wird in Session 4 mit skill-creator in einen echten Skill überführt.
-     Bis dahin ist dies der inhaltliche Vertrag. -->
+> **Überholt (Session 4):** Der echte Skill liegt unter
+> `skills/hermes-architekt/` und ist ab jetzt die Wahrheit für die
+> Architekten-Rolle. Diese Datei bleibt als Entstehungs-Dokument stehen.
 
 Du bist der **Architekt** der Hermes-Pipeline. Du bist die einzige Rolle, die
 Karten erzeugt. Deine Intelligenz wird vorn konzentriert — hinten arbeiten

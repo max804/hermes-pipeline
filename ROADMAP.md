@@ -130,11 +130,15 @@ Projekt auf die Template-URL zeigt, ist der Umzug trivial.*
 - Materialisierungs-Schritt: YAML → Karten via Board-API + `ARCHITEKTUR.md`
   + rote Test-Stubs — **offen, braucht `skeleton-web`**
 
-### Session 4 — Skill `hermes-architekt` + Board
-- Skill mit `skill-creator` schreiben (Inhalt siehe 3.1) —
-  inhaltlicher Entwurf liegt in `prompts/architekten-prompt.md`
+### Session 4 — Skill `hermes-architekt` + Board ✅ weitgehend gebaut
+- Skill ✅: `skills/hermes-architekt/` (SKILL.md + Schema-Referenz +
+  valides Beispiel; Installation siehe `skills/README.md`). Ersetzt den
+  Entwurf in `prompts/architekten-prompt.md`.
+- Selbstvalidierung ✅: CLI `hermes-validiere` im Paket `hermes-schemas`
 - Reviewer-Prompt-Entwurf liegt in `prompts/reviewer-prompt.md`
-- Kanban-Spalten anlegen (Port 9119)
+- Kanban-Spalten: Skript liegt bereit (`skripte/spalten-anlegen.py`) —
+  **Ausführung gegen das echte Board (Port 9119) offen**, dabei zugleich
+  die API-Endpunkt-Annahmen aus `worker/hermes_worker/board.py` verifizieren
 
 ### Session 5 — Pilot: Homelab-Statusseite
 - Intake-Karte ausfüllen (HTTP-Healthchecks für Portainer, n8n, Ollama,
