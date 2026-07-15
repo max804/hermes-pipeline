@@ -32,6 +32,7 @@ from hermes_worker.aider_runner import AiderErgebnis, fuehre_aider_aus
 from hermes_worker.board import BoardKarte
 from hermes_worker.checks import PruefErgebnis, make_check
 from hermes_worker.config import WorkerKonfig
+from hermes_worker.reviewer import ReviewErgebnis, fuehre_review_aus
 from hermes_worker.state import WorkerZustand
 from hermes_worker import telegram
 
@@ -53,6 +54,7 @@ class Worker:
         zustand: WorkerZustand,
         aider: Callable[..., AiderErgebnis] = fuehre_aider_aus,
         pruefung: Callable[..., PruefErgebnis] = make_check,
+        review: Callable[..., ReviewErgebnis] = fuehre_review_aus,
         melde: Callable[..., None] = telegram.sende,
     ):
         self.konfig = konfig
@@ -60,6 +62,7 @@ class Worker:
         self.zustand = zustand
         self._aider = aider
         self._pruefung = pruefung
+        self._review = review
         self._melde = melde
 
     # --- Neustart-Aufräumen --------------------------------------------------
@@ -86,6 +89,7 @@ class Worker:
 
     def tick(self) -> None:
         self._pruefe_eingang()
+        self._verarbeite_review()
         self._verarbeite_bereit()
 
     # --- 1) Eingang ----------------------------------------------------------
@@ -104,13 +108,125 @@ class Worker:
             self.board.kommentiere(karte.id, ergebnis.als_kommentar())
             self.zustand.merke_intake_kommentar(karte.id, inhalt_hash)
 
-    # --- 2) Coder-Schleife -----------------------------------------------------
+    # --- 2) Reviewer-Schleife ---------------------------------------------------
 
-    def _verarbeite_bereit(self) -> None:
-        karten = self.board.karten_in(self.konfig.spalten.bereit)
+    def _gesperrte_projekte(self) -> set[str]:
+        """Projekte mit Karte in Review, In Arbeit oder Blockiert: dort darf
+        keine neue Karte starten — sie würde auf einem main aufbauen, dem der
+        ungemergte Vorgänger fehlt. Blockiert löst nur der Mensch auf."""
+        projekte = set()
+        for spalte in (
+            self.konfig.spalten.review,
+            self.konfig.spalten.in_arbeit,
+            self.konfig.spalten.blockiert,
+        ):
+            for karte in self.board.karten_in(spalte):
+                try:
+                    meta, _ = lade_kartenmeta(karte.beschreibung)
+                    projekte.add(meta.projekt)
+                except KartenFormatFehler:
+                    continue
+        return projekte
+
+    def _verarbeite_review(self) -> None:
+        if not self.konfig.reviewer_modell:
+            return  # Review bleibt beim Menschen, bis das Zweitmodell gewählt ist
+        karten = self.board.karten_in(self.konfig.spalten.review)
         if not karten:
             return
         karte = karten[0]  # sequenziell, eine pro Tick
+
+        try:
+            meta, kartentext = lade_kartenmeta(karte.beschreibung)
+        except KartenFormatFehler:
+            return  # menschliche Karte in Review — nicht anfassen
+
+        repo_pfad = self.konfig.projekte_verzeichnis / meta.projekt
+        branch = self.zustand.branch_von(karte.id) or git.branch_name(
+            meta.karte, karte.titel or meta.karte
+        )
+        log.info("review von karte %s (%s) auf %s", karte.id, meta.karte, branch)
+        ergebnis = self._review(self.konfig, repo_pfad, branch, kartentext)
+
+        if ergebnis.urteil == "ok":
+            titel = karte.titel.removeprefix(f"[{meta.karte}]").strip() or meta.karte
+            try:
+                git.squash_merge(repo_pfad, branch, f"[{meta.karte}] {titel}")
+            except git.GitFehler as e:
+                self.board.kommentiere(karte.id, f"Review OK, aber Squash-Merge scheitert: {e}")
+                self.board.verschiebe(karte.id, self.konfig.spalten.blockiert)
+                self._melde(
+                    self.konfig.telegram,
+                    f"Hermes: Merge-Konflikt bei {meta.karte} ({meta.projekt}) — blockiert.",
+                )
+                return
+            self.board.kommentiere(
+                karte.id, f"Review OK — squash-merged nach `main` als `[{meta.karte}] {titel}`."
+            )
+            self.board.verschiebe(karte.id, self.konfig.spalten.done)
+            log.info("karte %s done, branch %s gemergt", karte.id, branch)
+            return
+
+        if ergebnis.urteil == "fix":
+            # Fix-Rückläufer: dieselbe Karte geht mit den Befunden zurück —
+            # das einzige Erzeugnis, das dem Reviewer zusteht (DECISIONS.md).
+            self.zustand.setze_letzte_pruefung(karte.id, ergebnis.befunde)
+            versuche = self.zustand.erhoehe_versuche(karte.id)
+            if versuche >= self.konfig.max_versuche:
+                self.board.kommentiere(
+                    karte.id,
+                    f"Review FIX, Versuch {versuche}/{self.konfig.max_versuche} — blockiert. "
+                    f"Branch `{branch}` bleibt als Beweisstück.\n\n{ergebnis.befunde}",
+                )
+                self.board.verschiebe(karte.id, self.konfig.spalten.blockiert)
+                self._melde(
+                    self.konfig.telegram,
+                    f"Hermes: Karte {meta.karte} ({meta.projekt}) nach Review-FIX blockiert.",
+                )
+            else:
+                self.board.kommentiere(
+                    karte.id,
+                    f"Review FIX, Versuch {versuche}/{self.konfig.max_versuche} — "
+                    f"Fix-Rückläufer:\n\n{ergebnis.befunde}",
+                )
+                self.board.verschiebe(karte.id, self.konfig.spalten.bereit)
+            log.info("karte %s review-fix, versuch %d", karte.id, versuche)
+            return
+
+        # unklar: Reviewer-Fehlfunktion — sichtbar eskalieren statt endlos wiederholen
+        self.board.kommentiere(
+            karte.id,
+            "Reviewer-Urteil unparsebar oder Lauf gescheitert — bitte manuell "
+            f"reviewen (zurück nach Review = erneuter Versuch).\n```\n{ergebnis.ausgabe_ende}\n```",
+        )
+        self.board.verschiebe(karte.id, self.konfig.spalten.blockiert)
+        self._melde(
+            self.konfig.telegram,
+            f"Hermes: Reviewer-Lauf für {meta.karte} ({meta.projekt}) unklar — blockiert.",
+        )
+
+    # --- 3) Coder-Schleife -----------------------------------------------------
+
+    def _verarbeite_bereit(self) -> None:
+        karten = self.board.karten_in(self.konfig.spalten.bereit)
+        gesperrt = self._gesperrte_projekte()
+        karte = None
+        for kandidat in karten:
+            try:
+                meta_probe, _ = lade_kartenmeta(kandidat.beschreibung)
+            except KartenFormatFehler:
+                karte = kandidat  # Freigabe-/Fehlformat-Karten behandeln wie bisher
+                break
+            if meta_probe.projekt in gesperrt:
+                log.info(
+                    "karte %s wartet: projekt %s hat karte in review",
+                    kandidat.id, meta_probe.projekt,
+                )
+                continue
+            karte = kandidat
+            break
+        if karte is None:
+            return
 
         try:
             meta, kartentext = lade_kartenmeta(karte.beschreibung)

@@ -10,6 +10,10 @@ datenbank: "~/worker.db"
 
 aider_bin: "aider"
 coder_modell: "ollama_chat/qwen3-coder"
+# Reviewer-Zweitmodell: leer lassen, bis der Bug-Diff-Test entschieden ist
+# (Kandidaten: qwen3.6, gpt-oss, ornith). Leer = Review bleibt beim Menschen.
+# Muss architektonisch verschieden vom Coder sein!
+reviewer_modell: ""
 aider_timeout_s: 1200        # 20 Minuten, harte Regel
 max_versuche: 3
 

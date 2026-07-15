@@ -2,9 +2,7 @@
 Fake-Board für die Karten. Läuft nur mit installiertem copier (dev-Umgebung)."""
 
 import subprocess
-from pathlib import Path
 
-import pytest
 
 from hermes_schemas.karte import lade_kartenmeta
 from hermes_worker import materialisierung

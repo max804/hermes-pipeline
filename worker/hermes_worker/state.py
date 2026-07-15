@@ -53,6 +53,12 @@ class WorkerZustand:
         )
         self._db.commit()
 
+    def branch_von(self, karten_id: str) -> str | None:
+        zeile = self._db.execute(
+            "SELECT branch FROM karten WHERE karten_id=?", (karten_id,)
+        ).fetchone()
+        return zeile[0] if zeile else None
+
     def versuche(self, karten_id: str) -> int:
         zeile = self._db.execute(
             "SELECT versuche FROM karten WHERE karten_id=?", (karten_id,)

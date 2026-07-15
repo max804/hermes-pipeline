@@ -1,4 +1,8 @@
-# Reviewer-Prompt (Entwurf, Aider-`/ask`-Lauf mit lokalem Zweitmodell)
+# Reviewer-Prompt (Aider-`/ask`-Lauf mit lokalem Zweitmodell)
+
+> **Umgesetzt:** Die produktive Fassung ist als `PROMPT`-Konstante in
+> `worker/hermes_worker/reviewer.py` eingebettet (der Worker reist ohne
+> dieses Verzeichnis). Änderungen hier und dort synchron halten.
 
 <!-- Modellwahl empirisch per Bug-Diff-Test (drei absichtlich eingebaute
      Fehler in einem Diff erkennen) — Kandidaten: qwen3.6, gpt-oss, ornith.

@@ -26,6 +26,21 @@ ARCHITEKTUR.md lässt sich vollständig aus ihr rendern. Begründung: §3.4
 verlangt selbst „erzeugt der Worker deterministisch" — der Aider-Lauf wäre
 eine unnötige Fehlerquelle. Weniger Teile, gleiche Wirkung.
 
+## 2026-07-15 · [Aufbau: Reviewer-Lauf — Fix-Rückläufer als Kartenrückgabe]
+
+§2 gibt dem Reviewer das Recht, „ausschließlich Fix-Rückläuferkarten zu
+erzeugen". Umgesetzt als Rückgabe DERSELBEN Karte nach *Bereit* (Befunde als
+Kommentar + Kontext für den nächsten Aider-Lauf) statt als neue Board-Karte:
+Eine Duplikat-Karte hätte die Eindeutigkeit Karte ↔ Branch ↔ Stub ↔
+Versuchszähler gebrochen. Der geteilte 3-Versuche-Zähler deckt Check- und
+Review-Fehlschläge gemeinsam ab. Zusätzlich übernimmt der Worker nach
+Review-OK den Squash-Merge (§8) selbst — Done ohne Merge hätte main nie
+weiterbewegt — und ein Sequenz-Wächter verhindert, dass eine neue Karte
+startet, solange ein Vorgänger desselben Projekts in Review/In Arbeit/
+Blockiert hängt (sie würde auf einem main ohne dessen Code aufbauen).
+Reviewer-Aktivierung erst nach dem Bug-Diff-Test: `reviewer_modell` leer =
+Review bleibt beim Menschen.
+
 ## 2026-07-15 · [Aufbau: Eigenes Board statt bestehendes Hermes-Kanban]
 
 Entscheidung des Betreibers: Das Board wird nicht das bestehende

@@ -136,7 +136,10 @@ Projekt auf die Template-URL zeigt, ist der Umzug trivial.*
   valides Beispiel; Installation siehe `skills/README.md`). Ersetzt den
   Entwurf in `prompts/architekten-prompt.md`.
 - Selbstvalidierung ✅: CLI `hermes-validiere` im Paket `hermes-schemas`
-- Reviewer-Prompt-Entwurf liegt in `prompts/reviewer-prompt.md`
+- Reviewer-Lauf ✅ im Worker (`hermes_worker/reviewer.py`): Aider-`/ask`
+  mit Diff, URTEIL OK → Squash-Merge + Done, URTEIL FIX → Fix-Rückläufer,
+  Sequenz-Wächter pro Projekt. Scharf erst mit gesetztem `reviewer_modell`
+  nach dem **Bug-Diff-Test** (bis dahin: Review beim Menschen)
 - Board ✅ (Entscheidung 15.07.2026, siehe `DECISIONS.md`): **eigenes
   hermes-board** (`board/`) statt bestehendem Hermes-Kanban — Dashboard +
   Steuerung (Drag & Drop, Intake-Vorlagen, Kommentare) auf Port 9119,

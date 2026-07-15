@@ -65,8 +65,26 @@ jeweiligen Karte — Begründung: DECISIONS.md), Commit, Coder-Karten in
 topologischer Reihenfolge nach *Bereit*. Change-Projekte (Repo existiert):
 keine Instanziierung, ARCHITEKTUR.md bleibt unangetastet.
 
+## Reviewer-Lauf (`hermes_worker/reviewer.py`)
+
+Aktiv, sobald `reviewer_modell` in der Config gesetzt ist (leer = Review
+bleibt beim Menschen — so bleibt es, bis der Bug-Diff-Test das Zweitmodell
+entschieden hat). Pro Tick eine Karte aus *Review*:
+
+- Aider-`/ask` mit dem Zweitmodell: Kartentext + Diff (`main...branch`,
+  gekürzt auf 30 kB) + ARCHITEKTUR.md/AGENTS.md read-only
+- `URTEIL: OK` → Squash-Merge nach main als `[K##] Titel`, Branch weg,
+  Karte nach *Done*
+- `URTEIL: FIX` → Fix-Rückläufer: Befunde als Kommentar + `letzte_pruefung`,
+  Karte zurück nach *Bereit*, Zähler +1 (ab 3 → *Blockiert* + Ping)
+- unparsebar/Timeout → *Blockiert* + Ping (Mensch schiebt zurück nach
+  *Review* für einen neuen Versuch)
+
+**Sequenz-Wächter:** Projekte mit Karte in *Review*, *In Arbeit* oder
+*Blockiert* starten keine neue *Bereit*-Karte — sie würde auf einem main
+aufbauen, dem der ungemergte Vorgänger fehlt.
+
 ## Noch offen
 
-- Squash-Merge nach Review (v1: manuell aus der Review-Spalte)
-- Reviewer-Lauf (Aider /ask mit Zweitmodell) — nach der Modellwahl
-  per Bug-Diff-Test
+- Manueller Cloud-Retry für blockierte Karten (ARCHITEKTUR.md §10,
+  „Eskalation") — v1: von Hand

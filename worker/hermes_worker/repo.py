@@ -60,6 +60,21 @@ def commit_alle(repo: Path, botschaft: str) -> None:
         _git(repo, "commit", "-m", botschaft)
 
 
+def squash_merge(repo: Path, branch: str, botschaft: str) -> None:
+    """Grün + Review OK → ein Commit auf main (`[K07] Titel`), Branch weg
+    (ARCHITEKTUR.md §8). Bei Konflikt: aufräumen und GitFehler werfen."""
+    _git(repo, "checkout", "main")
+    try:
+        _git(repo, "merge", "--squash", branch)
+        _git(repo, "commit", "-m", botschaft)
+    except GitFehler:
+        subprocess.run(
+            ["git", "-C", str(repo), "reset", "--hard"], capture_output=True, timeout=120
+        )
+        raise
+    _git(repo, "branch", "-D", branch)
+
+
 def verwerfe_branch(repo: Path, branch: str) -> None:
     """Abbruch/Timeout: Branch verwerfen, Arbeitskopie sauber auf main."""
     subprocess.run(

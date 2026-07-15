@@ -44,6 +44,10 @@ class WorkerKonfig(BaseModel):
 
     aider_bin: str = "aider"
     coder_modell: str = "ollama_chat/qwen3-coder"
+    # Leer = Reviewer aus, Karten bleiben in Review beim Menschen.
+    # Modellwahl empirisch per Bug-Diff-Test; muss architektonisch
+    # verschieden vom Coder sein (ARCHITEKTUR.md §2/§10).
+    reviewer_modell: str = ""
     aider_timeout_s: int = Field(default=1200, description="20 Minuten, harte Regel")
     max_versuche: int = 3
 
