@@ -17,9 +17,13 @@ from hermes_worker.config import WorkerKonfig
 
 
 def aider_umgebung(konfig: WorkerKonfig) -> dict[str, str]:
-    """Prozessumgebung für Aider-Läufe: setzt OLLAMA_API_BASE aus der Config,
-    damit der Ollama-Server nicht in der systemd-Unit versteckt werden muss."""
+    """Prozessumgebung für Aider-Läufe: LLM-Server-Zugang aus der Config,
+    damit er nicht in der systemd-Unit versteckt werden muss. Unterstützt
+    OpenAI-kompatible Server (Lemonade) und Ollama."""
     umgebung = os.environ.copy()
+    if konfig.openai_api_base:
+        umgebung["OPENAI_API_BASE"] = konfig.openai_api_base
+        umgebung["OPENAI_API_KEY"] = konfig.openai_api_key or "unbenutzt"
     if konfig.ollama_api_base:
         umgebung["OLLAMA_API_BASE"] = konfig.ollama_api_base
     return umgebung
@@ -59,6 +63,7 @@ def fuehre_aider_aus(
         konfig.aider_bin,
         "--yes-always",
         "--model", konfig.coder_modell,
+        *konfig.aider_extra_args,
         "--message-file", auftragsdatei,
         *(arg for pfad in lese_dateien for arg in ("--read", pfad)),
         *dateien,

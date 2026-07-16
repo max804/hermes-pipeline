@@ -104,6 +104,7 @@ def fuehre_review_aus(
         "--chat-mode", "ask",
         "--yes-always",
         "--model", konfig.reviewer_modell,
+        *konfig.aider_extra_args,
         "--message-file", promptdatei,
         "--read", "ARCHITEKTUR.md",
         "--read", "AGENTS.md",

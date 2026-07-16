@@ -51,10 +51,15 @@ class WorkerKonfig(BaseModel):
     datenbank: Path = Path("~/worker.db")
 
     aider_bin: str = "aider"
-    # Ollama-Server für Aider (leer = Umgebung unverändert lassen).
-    # Beispiel: "http://192.168.178.27:11434"
+    # LLM-Server für Aider (leer = Umgebung unverändert lassen).
+    # Lemonade/vLLM/etc. (OpenAI-kompatible API):
+    openai_api_base: str = ""
+    openai_api_key: str = ""  # Lemonade erwartet nur einen Dummy-Wert
+    # Alternative: Ollama-API, z. B. "http://192.168.178.27:11434"
     ollama_api_base: str = ""
-    coder_modell: str = "ollama_chat/qwen3-coder-next:latest"
+    coder_modell: str = "openai/Qwen3-Coder-Next-GGUF"
+    # Zusätzliche Aider-Flags für Coder- UND Reviewer-Läufe:
+    aider_extra_args: list[str] = []
     # Leer = Reviewer aus, Karten bleiben in Review beim Menschen.
     # Modellwahl empirisch per Bug-Diff-Test; muss architektonisch
     # verschieden vom Coder sein (ARCHITEKTUR.md §2/§10).

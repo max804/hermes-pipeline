@@ -27,7 +27,7 @@ Es gibt exakt drei Rollen. Erweiterung ist später möglich, Schrumpfen wäre es
 
 **Architekt** — läuft als Hermes-Session mit einem Cloud-Frontier-Modell (einmal pro Projekt, größter Qualitätshebel, Cent-Beträge). Er liest die Projekteingabe, stellt maximal eine gesammelte Rückfragerunde per Telegram, instanziiert die Blaupause und liefert als einziges Abgabe-Artefakt eine `projekt.yaml` (siehe Abschnitt 6). **Nur der Architekt darf Karten erzeugen.**
 
-**Coder** — läuft als direkter Aider-Lauf mit qwen3-coder (lokal, Ollama auf dem Strix Halo). Er arbeitet genau eine Karte pro Lauf ab, im Skeleton, gegen die Blaupause, auf einem eigenen Branch. Er erzeugt keine Karten.
+**Coder** — läuft als direkter Aider-Lauf mit Qwen3-Coder-Next (lokal, **Lemonade-Server** mit OpenAI-kompatibler API auf dem Strix Halo; *Änderung vom 16.07.2026, vorher Ollama — siehe `DECISIONS.md`*). Er arbeitet genau eine Karte pro Lauf ab, im Skeleton, gegen die Blaupause, auf einem eigenen Branch. Er erzeugt keine Karten.
 
 **Reviewer** — läuft als Aider-`/ask`-Lauf mit einem lokalen Zweitmodell, das architektonisch verschieden vom Coder sein muss (Kandidaten: qwen3.6, gpt-oss, ornith — endgültige Wahl empirisch per Bug-Diff-Test: erkennt das Modell drei absichtlich eingebaute Fehler in einem Diff?). Sein LLM-Urteil ist nur eine Stimme; die harte Wahrheit liefert `make check`. Er darf ausschließlich Fix-Rückläuferkarten erzeugen.
 
@@ -144,7 +144,7 @@ Deployment ist die vom Architekten standardmäßig eingeplante **letzte Karte**,
 | Rolle | Modell | Begründung |
 |---|---|---|
 | Architekt | Cloud-Frontier (via Hermes) | Läuft einmal pro Projekt, größter Qualitätshebel, Output wird ohnehin im Gate reviewt |
-| Coder | qwen3-coder (lokal, Ollama) | Läuft oft; zementiertes Skeleton + präzise Karten sind genau die Bedingungen, unter denen lokale Modelle gut sind |
+| Coder | Qwen3-Coder-Next (lokal, Lemonade) | Läuft oft; zementiertes Skeleton + präzise Karten sind genau die Bedingungen, unter denen lokale Modelle gut sind |
 | Reviewer | lokales Zweitmodell (qwen3.6 / gpt-oss / ornith, Wahl per Bug-Diff-Test) | Muss architektonisch verschieden vom Coder sein, sonst nickt derselbe Bias die eigenen Fehler ab |
 | Eskalation | optional Cloud-Retry | Manuell wählbar bei blockierten Karten, vor eigenem Eingreifen |
 

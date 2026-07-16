@@ -4,10 +4,10 @@ Reihenfolge verbindlich; jeder Schritt endet mit einem Prüfpunkt.
 Voraussetzungen auf dem Strix Halo: Python ≥ 3.11 **inklusive
 venv-Unterstützung** (Debian/Ubuntu: `sudo apt install python3.12-venv` —
 sonst scheitert `make setup` mit „ensurepip is not available"; danach
-`rm -rf .venv` und neu ausführen), git, Docker, Ollama-Server im LAN
-(192.168.178.27, mit `qwen3-coder-next:latest` gezogen), Aider
-(Installation: `python3 -m venv ~/aider-venv && ~/aider-venv/bin/pip
-install aider-chat`).
+`rm -rf .venv` und neu ausführen), git, Docker, **Lemonade-Server** im LAN
+(OpenAI-kompatible API auf `http://192.168.178.27:13305/api/v1`, Modell
+`Qwen3-Coder-Next-GGUF` geladen), Aider (Installation:
+`python3 -m venv ~/aider-venv && ~/aider-venv/bin/pip install aider-chat`).
 
 ---
 
@@ -73,18 +73,23 @@ docker run --rm --network none --memory 8g --cpus 4 -v "$PWD":/work -w /work pro
 Im Probe-Projekt genau das Kommando fahren, das der Worker baut:
 
 ```bash
-export OLLAMA_API_BASE=http://192.168.178.27:11434   # Ollama-Server im LAN
 cd ~/projekte/probe && git init -b main && git add -A && git commit -m init
 echo "Füge in app/routes/pages.py einen Kommentar '# probe' hinzu." > /tmp/auftrag.md
-aider --yes-always --model ollama_chat/qwen3-coder-next:latest \
+OPENAI_API_BASE=http://192.168.178.27:13305/api/v1 \
+OPENAI_API_KEY=lemonade \
+~/aider-venv/bin/aider --yes-always \
+      --model openai/Qwen3-Coder-Next-GGUF \
+      --no-show-model-warnings --map-tokens 1024 --timeout 900 \
       --message-file /tmp/auftrag.md \
       --read ARCHITEKTUR.md --read AGENTS.md \
       app/routes/pages.py
 ```
 
-(Im Betrieb setzt der Worker `OLLAMA_API_BASE` selbst — aus
-`ollama_api_base` in der `config.yaml`; der export gilt nur für diesen
-Handtest.)
+✅ **Bestanden am 16.07.2026** (Aider 0.86.2 gegen Lemonade, Edit
+angewendet, keine Rückfragen). Im Betrieb setzt der Worker
+`OPENAI_API_BASE`/`OPENAI_API_KEY` selbst — aus `openai_api_base` /
+`openai_api_key` in der `config.yaml`; die Zusatz-Flags kommen aus
+`aider_extra_args`.
 
 **Prüfpunkt:** Aider läuft ohne Rückfragen durch und committet. Falls deine
 Aider-Version Flags anders nennt: einzige Anpassungsstelle ist
@@ -131,7 +136,9 @@ sudoedit /home/hermes-worker/config.yaml
 In der `config.yaml` anpassen:
 - `board_url: "http://127.0.0.1:8199"` (Portentscheidung aus Schritt 2!)
 - `aider_bin: "/home/hermes-worker/.venv/bin/aider"`
-- `ollama_api_base: "http://192.168.178.27:11434"` (Ollama-Server im LAN)
+- `openai_api_base` / `openai_api_key` / `coder_modell` /
+  `aider_extra_args`: stehen schon richtig in der Beispiel-Config
+  (Lemonade, Schritt-4-Werte) — nur gegenprüfen
 - `template_quellen: {web: "gh:max804/skeleton-web"}`
 - `telegram:` Token-Datei + Chat-ID (oder leer lassen → nur Logfile)
 - `reviewer_modell:` **leer lassen** (bis Schritt 9)

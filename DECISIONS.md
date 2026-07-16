@@ -26,6 +26,17 @@ ARCHITEKTUR.md lässt sich vollständig aus ihr rendern. Begründung: §3.4
 verlangt selbst „erzeugt der Worker deterministisch" — der Aider-Lauf wäre
 eine unnötige Fehlerquelle. Weniger Teile, gleiche Wirkung.
 
+## 2026-07-16 · [Betrieb: Lemonade-Server statt Ollama]
+
+Der lokale LLM-Server auf dem Strix Halo (192.168.178.27) ist Lemonade
+(OpenAI-kompatible API, Port 13305) statt Ollama. Aider spricht ihn über
+`OPENAI_API_BASE`/`OPENAI_API_KEY` (Dummy-Schlüssel) an; der Worker setzt
+beides aus der Config (`openai_api_base`/`openai_api_key`), Zusatz-Flags
+über `aider_extra_args` (verifiziert: `--no-show-model-warnings
+--map-tokens 1024 --timeout 900`). Coder-Modell:
+`openai/Qwen3-Coder-Next-GGUF`. Ollama-Unterstützung bleibt als Alternative
+in der Config erhalten. Handtest (Schritt 4) am 16.07.2026 bestanden.
+
 ## 2026-07-15 · [Aufbau: Reviewer-Lauf — Fix-Rückläufer als Kartenrückgabe]
 
 §2 gibt dem Reviewer das Recht, „ausschließlich Fix-Rückläuferkarten zu
