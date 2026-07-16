@@ -51,6 +51,9 @@ class WorkerKonfig(BaseModel):
     datenbank: Path = Path("~/worker.db")
 
     aider_bin: str = "aider"
+    # Ollama-Server für Aider (leer = Umgebung unverändert lassen).
+    # Beispiel: "http://192.168.178.27:11434"
+    ollama_api_base: str = ""
     coder_modell: str = "ollama_chat/qwen3-coder"
     # Leer = Reviewer aus, Karten bleiben in Review beim Menschen.
     # Modellwahl empirisch per Bug-Diff-Test; muss architektonisch

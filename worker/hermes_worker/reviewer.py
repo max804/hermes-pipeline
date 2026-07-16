@@ -17,6 +17,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
+from hermes_worker.aider_runner import aider_umgebung
 from hermes_worker.config import WorkerKonfig
 
 _DIFF_GRENZE = 30_000
@@ -111,6 +112,7 @@ def fuehre_review_aus(
         lauf = subprocess.run(
             kommando,
             cwd=repo,
+            env=aider_umgebung(konfig),
             capture_output=True,
             text=True,
             timeout=konfig.aider_timeout_s,

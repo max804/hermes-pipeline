@@ -9,6 +9,8 @@ projekte_verzeichnis: "~/projekte"
 datenbank: "~/worker.db"
 
 aider_bin: "aider"
+# Ollama läuft auf einem eigenen Server (leer lassen, wenn lokal auf 11434):
+ollama_api_base: "http://192.168.178.27:11434"
 coder_modell: "ollama_chat/qwen3-coder"
 # Reviewer-Zweitmodell: leer lassen, bis der Bug-Diff-Test entschieden ist
 # (Kandidaten: qwen3.6, gpt-oss, ornith). Leer = Review bleibt beim Menschen.

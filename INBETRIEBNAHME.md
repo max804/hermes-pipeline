@@ -71,6 +71,7 @@ docker run --rm --network none --memory 8g --cpus 4 -v "$PWD":/work -w /work pro
 Im Probe-Projekt genau das Kommando fahren, das der Worker baut:
 
 ```bash
+export OLLAMA_API_BASE=http://192.168.178.27:11434   # Ollama-Server im LAN
 cd ~/projekte/probe && git init -b main && git add -A && git commit -m init
 echo "Füge in app/routes/pages.py einen Kommentar '# probe' hinzu." > /tmp/auftrag.md
 aider --yes-always --model ollama_chat/qwen3-coder \
@@ -78,6 +79,10 @@ aider --yes-always --model ollama_chat/qwen3-coder \
       --read ARCHITEKTUR.md --read AGENTS.md \
       app/routes/pages.py
 ```
+
+(Im Betrieb setzt der Worker `OLLAMA_API_BASE` selbst — aus
+`ollama_api_base` in der `config.yaml`; der export gilt nur für diesen
+Handtest.)
 
 **Prüfpunkt:** Aider läuft ohne Rückfragen durch und committet. Falls deine
 Aider-Version Flags anders nennt: einzige Anpassungsstelle ist
@@ -121,6 +126,7 @@ sudoedit /home/hermes-worker/config.yaml
 In der `config.yaml` anpassen:
 - `board_url: "http://127.0.0.1:8199"` (Portentscheidung aus Schritt 2!)
 - `aider_bin: "/home/hermes-worker/.venv/bin/aider"`
+- `ollama_api_base: "http://192.168.178.27:11434"` (Ollama-Server im LAN)
 - `template_quellen: {web: "gh:max804/skeleton-web"}`
 - `telegram:` Token-Datei + Chat-ID (oder leer lassen → nur Logfile)
 - `reviewer_modell:` **leer lassen** (bis Schritt 9)

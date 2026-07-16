@@ -7,12 +7,22 @@ Timeout wie Abbruch (Branch verwerfen, Karte zurück auf *Bereit*).
 
 from __future__ import annotations
 
+import os
 import subprocess
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
 from hermes_worker.config import WorkerKonfig
+
+
+def aider_umgebung(konfig: WorkerKonfig) -> dict[str, str]:
+    """Prozessumgebung für Aider-Läufe: setzt OLLAMA_API_BASE aus der Config,
+    damit der Ollama-Server nicht in der systemd-Unit versteckt werden muss."""
+    umgebung = os.environ.copy()
+    if konfig.ollama_api_base:
+        umgebung["OLLAMA_API_BASE"] = konfig.ollama_api_base
+    return umgebung
 
 
 @dataclass(frozen=True)
@@ -57,6 +67,7 @@ def fuehre_aider_aus(
         lauf = subprocess.run(
             kommando,
             cwd=repo,
+            env=aider_umgebung(konfig),
             capture_output=True,
             text=True,
             timeout=konfig.aider_timeout_s,
