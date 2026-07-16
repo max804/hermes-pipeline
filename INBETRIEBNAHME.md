@@ -26,11 +26,15 @@ make check
 
 ## Schritt 2 — Board starten und ansehen
 
+> **Portentscheidung (15.07.2026):** Auf dem Zielrechner belegt das alte
+> Hermes (Prozess `hermes`) weiterhin Port 9119. Das neue Board läuft
+> deshalb auf **9120** — überall, wo unten 9119 stünde, gilt 9120.
+
 ```bash
-.venv/bin/hermes-board
+HERMES_BOARD_PORT=9120 .venv/bin/hermes-board
 ```
 
-Browser: `http://localhost:9119` (bzw. `http://<strix-ip>:9119` im LAN).
+Browser: `http://localhost:9120` (bzw. `http://<strix-ip>:9120` im LAN).
 
 **Prüfpunkt:** Acht Spalten sichtbar, „+ Neues Projekt" öffnet das Formular
 mit vorbelegter Intake-Vorlage, eine Testkarte lässt sich per Drag & Drop
@@ -115,10 +119,15 @@ sudoedit /home/hermes-worker/config.yaml
 ```
 
 In der `config.yaml` anpassen:
+- `board_url: "http://127.0.0.1:9120"` (Portentscheidung aus Schritt 2!)
 - `aider_bin: "/home/hermes-worker/.venv/bin/aider"`
 - `template_quellen: {web: "gh:max804/skeleton-web"}`
 - `telegram:` Token-Datei + Chat-ID (oder leer lassen → nur Logfile)
 - `reviewer_modell:` **leer lassen** (bis Schritt 9)
+
+In der kopierten `hermes-board.service` außerdem die Zeile
+`Environment=HERMES_BOARD_PORT=9119` auf `9120` ändern, **bevor**
+`daemon-reload` läuft.
 
 Dienste:
 
