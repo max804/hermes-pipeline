@@ -5,6 +5,8 @@ from __future__ import annotations
 import logging
 import time
 
+import requests
+
 from hermes_worker.board import Board
 from hermes_worker.config import lade_konfig
 from hermes_worker.state import WorkerZustand
@@ -28,6 +30,9 @@ def main() -> None:
     while True:
         try:
             worker.tick()
+        except requests.RequestException as e:
+            # Board (noch) nicht erreichbar — einzeilig, nächster Poll kommt.
+            log.warning("board nicht erreichbar: %s", e)
         except Exception:
             # Ein kaputter Tick darf den Daemon nicht töten — nächster Poll kommt.
             log.exception("tick fehlgeschlagen")

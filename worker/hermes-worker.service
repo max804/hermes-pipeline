@@ -8,8 +8,8 @@
 
 [Unit]
 Description=Hermes Pipeline Poll-Worker
-After=network-online.target docker.service
-Wants=network-online.target
+After=network-online.target docker.service hermes-board.service
+Wants=network-online.target hermes-board.service
 
 [Service]
 Type=simple
