@@ -16,7 +16,7 @@ HTMX-Interaktionen liefern Fragmente über eigene `/partials/…`-Routen.
 
 | Artefakt | Muster | Beispiel |
 |---|---|---|
-| Routen-Datei | `app/routes/<bereich>.py` | `app/routes/status.py` |
+| Routen-Datei | `app/routes/<bereich>.py`, exportiert `router` — wird automatisch registriert, `main.py` nie anfassen | `app/routes/status.py` |
 | Seiten-Template | `app/templates/<seite>.html` | `app/templates/index.html` |
 | Fragment-Template | `app/templates/partials/<name>.html` | `partials/statusgrid.html` |
 | Partial-Route | `GET /partials/<name>` | `/partials/statusgrid` |
