@@ -22,7 +22,9 @@ docker_cpus: "4"
 
 # Copier-Template-Quellen je Domäne. Solange das Skeleton im Monorepo
 # liegt, ein lokaler Pfad; nach der Abspaltung: "gh:max804/skeleton-web".
-copier_bin: "copier"
+# copier_bin ist normalerweise nicht nötig — Standard ist das copier aus
+# dem venv des Workers (copier ist Laufzeit-Abhängigkeit von hermes-worker).
+# copier_bin: "/pfad/zu/copier"
 template_quellen:
   web: "~/hermes/hermes-pipeline/templates/skeleton-web"
 

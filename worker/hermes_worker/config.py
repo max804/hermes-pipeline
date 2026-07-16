@@ -7,10 +7,18 @@ Geladen aus YAML; Pfad kommt aus $HERMES_WORKER_CONFIG, sonst
 from __future__ import annotations
 
 import os
+import sys
 from pathlib import Path
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
+
+
+def _copier_standard() -> str:
+    """copier liegt im selben venv wie der Worker (Laufzeit-Abhängigkeit);
+    unter systemd enthält PATH das venv nicht — deshalb absoluter Pfad."""
+    kandidat = Path(sys.executable).parent / "copier"
+    return str(kandidat) if kandidat.exists() else "copier"
 
 
 class Spalten(BaseModel):
@@ -56,7 +64,7 @@ class WorkerKonfig(BaseModel):
 
     # Copier-Template-Quellen je Domäne (lokaler Pfad oder gh:owner/repo).
     # Nach der Skeleton-Abspaltung auf die Repo-URLs umstellen.
-    copier_bin: str = "copier"
+    copier_bin: str = Field(default_factory=_copier_standard)
     template_quellen: dict[str, str] = {
         "web": "~/hermes/hermes-pipeline/templates/skeleton-web",
     }
