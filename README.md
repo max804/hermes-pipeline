@@ -25,11 +25,9 @@ hermes-pipeline/
     └── skeleton-web/   Copier-Template der Web-Domäne — ⚠️ NUR ZUM ENTWERFEN hier
 ```
 
-**⚠️ Skeleton-Abspaltung:** `templates/skeleton-web/` liegt zum Entwerfen im
-Monorepo. Vor dem ersten instanziierten Projekt muss es in ein eigenes Repo
-mit eigener Tag-Historie (`web-v0.1.0`, …) umziehen, weil `copier update`
-über Git-Tags des Template-Repos arbeitet (Details:
-`templates/skeleton-web/README.md`).
+**Skeleton-Abspaltung (16.07.2026):** Das Web-Skeleton lebt jetzt im eigenen
+Repo **`github.com/max804/skeleton-web`** (Tags `web-v*`); die Kopie unter
+`templates/skeleton-web/` dient nur noch den Tests dieses Meta-Repos.
 
 ## Einstieg
 

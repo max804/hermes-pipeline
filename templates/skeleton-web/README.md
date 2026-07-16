@@ -1,24 +1,19 @@
 # skeleton-web — Copier-Template der Web-Domäne
 
+> **⚠️ ABGESPALTEN (16.07.2026): Die Wahrheit ist jetzt das Repo
+> `github.com/max804/skeleton-web`** (Tag-Historie `web-v*`). Diese Kopie
+> hier dient nur noch den Tests des Meta-Repos. Änderungen am Skeleton
+> passieren im Skeleton-Repo (per Skeleton-Change-Karte) und werden bei
+> Bedarf hierher zurückgespiegelt, damit die Tests aktuell bleiben.
+
 Zementiert die Architekturentscheidungen aus `ARCHITEKTUR.md` §5.1 in Code:
 FastAPI + Jinja2 + HTMX + Tailwind, Komponentenkatalog, `make check` im
 netzlosen Container.
 
-## ⚠️ Abspalten vor dem Pilotprojekt
-
-Dieses Template liegt zum Entwerfen unter `hermes-pipeline/templates/`.
-**Vor dem ersten instanziierten Projekt** muss es in ein eigenes Repo
-`skeleton-web` mit eigener Tag-Historie (`web-v0.1.0`, …) umziehen —
-`copier update` arbeitet über Git-Tags des Template-Repos, und eine mit
-Worker-Releases geteilte Tag-Historie wird beim Update alter Projekte
-unentwirrbar. Solange kein Projekt auf die Template-URL zeigt, ist der
-Umzug ein einfaches `git filter-repo`/Copy — danach nicht mehr.
-
 ## Nutzung
 
 ```bash
-copier copy ./templates/skeleton-web ~/projekte/<name>     # solange Monorepo
-copier copy gh:max804/skeleton-web   ~/projekte/<name>     # nach Abspaltung
+copier copy --trust gh:max804/skeleton-web ~/projekte/<name>
 ```
 
 Fragen: `projektname`, `beschreibung`, `port`, `static_only`, `caddy_domain`.

@@ -91,24 +91,27 @@ Aider-Version Flags anders nennt: einzige Anpassungsstelle ist
 `worker/hermes_worker/aider_runner.py` (und `reviewer.py` für
 `--chat-mode ask`).
 
-## Schritt 5 — Skeleton abspalten (vor dem Piloten!)
+## Schritt 5 — Skeleton abspalten (vor dem Piloten!) ✅ weitgehend erledigt
 
-`copier update` braucht eigene Tags. Leeres GitHub-Repo `skeleton-web`
-anlegen, dann entweder Claude machen lassen („füge skeleton-web hinzu")
-oder von Hand:
-
-```bash
-cd ~/hermes
-git clone git@github.com:max804/skeleton-web.git
-cp -r hermes-pipeline/templates/skeleton-web/* skeleton-web/
-cd skeleton-web && git add -A && git commit -m "skeleton-web v0.1.0 (aus hermes-pipeline abgespalten)"
-git tag web-v0.1.0 && git push -u origin main --tags
-```
-
-Ab jetzt ist das Skeleton-Repo die Wahrheit; die Kopie unter
+Erledigt am 16.07.2026: `github.com/max804/skeleton-web` enthält das
+Template auf `main` (Commit `76d2886`); `template_quellen` in der
+Beispiel-Config zeigt auf `gh:max804/skeleton-web`. Die Kopie unter
 `templates/` im Meta-Repo dient nur noch den Tests.
 
-**Prüfpunkt:** `copier copy gh:max804/skeleton-web /tmp/x` funktioniert.
+**Rest-Handgriff (Session-Proxy ließ keine Tag-Pushes durch):** den Tag
+`web-v0.1.0` einmalig von Hand setzen:
+
+```bash
+git clone https://github.com/max804/skeleton-web /tmp/sw
+cd /tmp/sw && git tag web-v0.1.0 && git push origin web-v0.1.0
+cd / && rm -rf /tmp/sw
+```
+
+(Alternativ über die GitHub-Oberfläche: Releases → „Create a new
+release" → Tag `web-v0.1.0` → Publish.)
+
+**Prüfpunkt:** `copier copy --trust gh:max804/skeleton-web /tmp/x` läuft
+ohne die Warnung „No git tags found in template".
 
 ## Schritt 6 — Worker-User, Dienste, Konfiguration
 

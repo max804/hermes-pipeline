@@ -94,12 +94,10 @@ Erst nach stabilem Betrieb.
 
 ## 4. Session-Reihenfolge (= Bauplan Punkt 1–4, in Arbeitspakete übersetzt)
 
-### Session 1 — Web-Skeleton ✅ gebaut (als `templates/skeleton-web/` in diesem Repo)
-*⚠️ Vor dem Pilotprojekt in ein eigenes Repo `skeleton-web` mit eigener
-Tag-Historie (`web-v0.1.0`, …) abspalten — `copier update` arbeitet über
-Git-Tags des Template-Repos, eine mit Worker-Releases geteilte Tag-Historie
-wird beim Update alter Projekte unentwirrbar. Solange kein instanziiertes
-Projekt auf die Template-URL zeigt, ist der Umzug trivial.*
+### Session 1 — Web-Skeleton ✅ gebaut und abgespalten
+*Seit 16.07.2026 eigenes Repo `github.com/max804/skeleton-web`
+(Tag-Historie `web-v*`); `templates/skeleton-web/` hier dient nur noch
+den Tests. 30-Minuten-Abnahmetest bestanden (Farben ✓, Katalog ✓).*
 - Copier-Struktur ✅ (`copier.yml`: projektname, beschreibung, port,
   static_only, caddy_domain; nur `*.jinja` wird gerendert)
 - FastAPI + Jinja2 + HTMX + Tailwind-Gerüst, `base.html` ✅
