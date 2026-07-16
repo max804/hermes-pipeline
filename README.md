@@ -35,4 +35,5 @@ mit eigener Tag-Historie (`web-v0.1.0`, …) umziehen, weil `copier update`
 
 1. [`ARCHITEKTUR.md`](ARCHITEKTUR.md) lesen — Zielbild, Trio-Modell, Anti-Ziele.
 2. [`ROADMAP.md`](ROADMAP.md) lesen — wer baut was, in welcher Reihenfolge.
-3. Aktuelle Session aus der Roadmap aufnehmen.
+3. [`INBETRIEBNAHME.md`](INBETRIEBNAHME.md) — Schritt-für-Schritt vom
+   Checkout bis zum Piloten.
