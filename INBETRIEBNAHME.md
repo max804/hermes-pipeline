@@ -28,13 +28,13 @@ make check
 
 > **Portentscheidung (15.07.2026):** Auf dem Zielrechner belegt das alte
 > Hermes (Prozess `hermes`) weiterhin Port 9119. Das neue Board läuft
-> deshalb auf **9120** — überall, wo unten 9119 stünde, gilt 9120.
+> deshalb auf **8199** — überall, wo unten 9119 stünde, gilt 8199.
 
 ```bash
-HERMES_BOARD_PORT=9120 .venv/bin/hermes-board
+HERMES_BOARD_PORT=8199 .venv/bin/hermes-board
 ```
 
-Browser: `http://localhost:9120` (bzw. `http://<strix-ip>:9120` im LAN).
+Browser: `http://localhost:8199` (bzw. `http://<strix-ip>:8199` im LAN).
 
 **Prüfpunkt:** Acht Spalten sichtbar, „+ Neues Projekt" öffnet das Formular
 mit vorbelegter Intake-Vorlage, eine Testkarte lässt sich per Drag & Drop
@@ -119,14 +119,14 @@ sudoedit /home/hermes-worker/config.yaml
 ```
 
 In der `config.yaml` anpassen:
-- `board_url: "http://127.0.0.1:9120"` (Portentscheidung aus Schritt 2!)
+- `board_url: "http://127.0.0.1:8199"` (Portentscheidung aus Schritt 2!)
 - `aider_bin: "/home/hermes-worker/.venv/bin/aider"`
 - `template_quellen: {web: "gh:max804/skeleton-web"}`
 - `telegram:` Token-Datei + Chat-ID (oder leer lassen → nur Logfile)
 - `reviewer_modell:` **leer lassen** (bis Schritt 9)
 
 In der kopierten `hermes-board.service` außerdem die Zeile
-`Environment=HERMES_BOARD_PORT=9119` auf `9120` ändern, **bevor**
+`Environment=HERMES_BOARD_PORT=9119` auf `8199` ändern, **bevor**
 `daemon-reload` läuft.
 
 Dienste:
@@ -139,7 +139,7 @@ sudo systemctl enable --now hermes-board hermes-worker
 journalctl -fu hermes-worker
 ```
 
-**Prüfpunkt:** Board unter Port 9119 erreichbar, Worker-Log zeigt alle
+**Prüfpunkt:** Board unter Port 8199 erreichbar, Worker-Log zeigt alle
 30 s einen Poll ohne Fehler.
 
 ## Schritt 7 — Pilot (Session 5): Homelab-Statusseite
