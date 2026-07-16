@@ -4,8 +4,10 @@ Reihenfolge verbindlich; jeder Schritt endet mit einem Prüfpunkt.
 Voraussetzungen auf dem Strix Halo: Python ≥ 3.11 **inklusive
 venv-Unterstützung** (Debian/Ubuntu: `sudo apt install python3.12-venv` —
 sonst scheitert `make setup` mit „ensurepip is not available"; danach
-`rm -rf .venv` und neu ausführen), git, Docker, Ollama (mit qwen3-coder
-gezogen), Aider.
+`rm -rf .venv` und neu ausführen), git, Docker, Ollama-Server im LAN
+(192.168.178.27, mit `qwen3-coder-next:latest` gezogen), Aider
+(Installation: `python3 -m venv ~/aider-venv && ~/aider-venv/bin/pip
+install aider-chat`).
 
 ---
 
@@ -74,7 +76,7 @@ Im Probe-Projekt genau das Kommando fahren, das der Worker baut:
 export OLLAMA_API_BASE=http://192.168.178.27:11434   # Ollama-Server im LAN
 cd ~/projekte/probe && git init -b main && git add -A && git commit -m init
 echo "Füge in app/routes/pages.py einen Kommentar '# probe' hinzu." > /tmp/auftrag.md
-aider --yes-always --model ollama_chat/qwen3-coder \
+aider --yes-always --model ollama_chat/qwen3-coder-next:latest \
       --message-file /tmp/auftrag.md \
       --read ARCHITEKTUR.md --read AGENTS.md \
       app/routes/pages.py

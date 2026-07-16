@@ -54,7 +54,7 @@ class WorkerKonfig(BaseModel):
     # Ollama-Server für Aider (leer = Umgebung unverändert lassen).
     # Beispiel: "http://192.168.178.27:11434"
     ollama_api_base: str = ""
-    coder_modell: str = "ollama_chat/qwen3-coder"
+    coder_modell: str = "ollama_chat/qwen3-coder-next:latest"
     # Leer = Reviewer aus, Karten bleiben in Review beim Menschen.
     # Modellwahl empirisch per Bug-Diff-Test; muss architektonisch
     # verschieden vom Coder sein (ARCHITEKTUR.md §2/§10).
