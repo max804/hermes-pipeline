@@ -1,8 +1,11 @@
 # Inbetriebnahme — Schritt für Schritt zum Piloten
 
 Reihenfolge verbindlich; jeder Schritt endet mit einem Prüfpunkt.
-Voraussetzungen auf dem Strix Halo: Python ≥ 3.11, git, Docker, Ollama
-(mit qwen3-coder gezogen), Aider.
+Voraussetzungen auf dem Strix Halo: Python ≥ 3.11 **inklusive
+venv-Unterstützung** (Debian/Ubuntu: `sudo apt install python3.12-venv` —
+sonst scheitert `make setup` mit „ensurepip is not available"; danach
+`rm -rf .venv` und neu ausführen), git, Docker, Ollama (mit qwen3-coder
+gezogen), Aider.
 
 ---
 
