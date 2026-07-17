@@ -36,7 +36,10 @@ def test_html_ist_valide(client):
         antwort = client.get(pfad)
         if not antwort.headers["content-type"].startswith("text/html"):
             continue
-        parser.parse(antwort.text)  # wirft ParseError bei invalidem HTML5
+        if not pfad.startswith("/partials/"):
+            # Partials sind per Konvention (BLAUPAUSE.md) Fragmente ohne
+            # Doctype — nur volle Seiten werden als Dokument validiert.
+            parser.parse(antwort.text)  # wirft ParseError bei invalidem HTML5
         assert "{{" not in antwort.text, f"{pfad}: ungerendertes Jinja im Output"
         assert "{%" not in antwort.text, f"{pfad}: ungerendertes Jinja im Output"
 
