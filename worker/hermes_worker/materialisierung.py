@@ -85,10 +85,18 @@ def _instanziiere(konfig: WorkerKonfig, projekt: ProjektYaml, ziel: Path) -> Non
         raise MaterialisierungsFehler(f"copier copy fehlgeschlagen:\n{lauf.stderr[-2000:]}")
     for kommando in (
         ["git", "init", "-b", "main"],
+        # Lokale Identität, damit Worker- und Aider-Commits ohne globale
+        # Git-Config funktionieren (hermes-worker hat keine ~/.gitconfig).
+        ["git", "config", "user.name", konfig.git_user_name],
+        ["git", "config", "user.email", konfig.git_user_email],
         ["git", "add", "-A"],
         ["git", "commit", "-q", "-m", "[K00] Skeleton instanziiert"],
     ):
-        subprocess.run(kommando, cwd=ziel, check=True, capture_output=True, timeout=120)
+        lauf = subprocess.run(kommando, cwd=ziel, capture_output=True, text=True, timeout=120)
+        if lauf.returncode != 0:
+            raise MaterialisierungsFehler(
+                f"git {' '.join(kommando[1:3])} fehlgeschlagen:\n{lauf.stderr[-1000:]}"
+            )
 
 
 def _rendere_architektur(projekt: ProjektYaml) -> str:

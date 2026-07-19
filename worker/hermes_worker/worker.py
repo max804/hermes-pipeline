@@ -326,6 +326,19 @@ class Worker:
                 f"Hermes: Materialisierung der Karte {karte.id} fehlgeschlagen.",
             )
             return
+        except Exception as e:
+            # Nichts darf die Karte in *In Arbeit* stranden lassen — jede
+            # unerwartete Ausnahme geht sichtbar nach *Blockiert*.
+            log.exception("materialisierung von %s unerwartet gescheitert", karte.id)
+            self.board.kommentiere(
+                karte.id, f"Materialisierung unerwartet abgebrochen: {type(e).__name__}: {e}"
+            )
+            self.board.verschiebe(karte.id, self.konfig.spalten.blockiert)
+            self._melde(
+                self.konfig.telegram,
+                f"Hermes: Materialisierung der Karte {karte.id} unerwartet abgebrochen.",
+            )
+            return
         self.board.kommentiere(
             karte.id,
             f"Materialisiert: `{projekt.projekt.name}` mit {len(projekt.karten)} Karten "

@@ -76,6 +76,10 @@ class WorkerKonfig(BaseModel):
     template_quellen: dict[str, str] = {
         "web": "~/hermes/hermes-pipeline/templates/skeleton-web",
     }
+    # Git-Identität für vom Worker instanziierte Projekt-Repos — lokal
+    # gesetzt, damit Worker- UND Aider-Commits ohne globale Git-Config laufen.
+    git_user_name: str = "Hermes Pipeline"
+    git_user_email: str = "hermes@localhost"
 
     spalten: Spalten = Spalten()
     telegram: TelegramKonfig = TelegramKonfig()

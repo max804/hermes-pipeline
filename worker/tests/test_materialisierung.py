@@ -110,6 +110,23 @@ def test_invalide_projekt_yaml_blockiert(konfig, board, zustand):
     assert any("K99" in text for _, text in board.kommentare)
 
 
+def test_instanziiertes_repo_hat_lokale_git_identitaet(konfig, board):
+    """Ohne lokale Identität scheitern Worker- und Aider-Commits auf Maschinen
+    ohne globale Git-Config (z. B. der hermes-worker-User)."""
+    materialisierung.materialisiere(konfig, board, BEISPIEL_YAML)
+    repo = konfig.projekte_verzeichnis / "homelab-status"
+    name = subprocess.run(
+        ["git", "-C", str(repo), "config", "--local", "user.name"],
+        capture_output=True, text=True,
+    ).stdout.strip()
+    email = subprocess.run(
+        ["git", "-C", str(repo), "config", "--local", "user.email"],
+        capture_output=True, text=True,
+    ).stdout.strip()
+    assert name == konfig.git_user_name
+    assert email == konfig.git_user_email
+
+
 def test_change_projekt_ohne_neuinstanziierung(konfig, board):
     """Existiert das Repo schon, bleibt ARCHITEKTUR.md unangetastet (Change-Fall)."""
     materialisierung.materialisiere(konfig, board, BEISPIEL_YAML)

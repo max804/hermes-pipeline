@@ -26,6 +26,20 @@ ARCHITEKTUR.md lässt sich vollständig aus ihr rendern. Begründung: §3.4
 verlangt selbst „erzeugt der Worker deterministisch" — der Aider-Lauf wäre
 eine unnötige Fehlerquelle. Weniger Teile, gleiche Wirkung.
 
+## 2026-07-17 · [Pilot-Reibung: Materialisierung strandete in "In Arbeit"]
+
+Erste echte Materialisierung im Pilot blieb in *In Arbeit* hängen, keine
+Coder-Karten. Ursache: Der `hermes-worker`-User hat keine globale
+Git-Config; der `git commit` bei der Skeleton-Instanziierung scheiterte an
+fehlender Author-Identität. Der Fehler (CalledProcessError) war keiner der
+in `_materialisiere` gefangenen Typen und landete im Tick-Bare-Except — die
+Karte blieb in *In Arbeit* stehen. Zwei Fixes: (1) `_instanziiere` setzt
+`user.name`/`user.email` LOKAL im Projekt-Repo (aus `git_user_name`/
+`git_user_email` der Config) — davon erben auch Aiders Commits, robust ohne
+globale Git-Config; (2) `_materialisiere` fängt jetzt jede Ausnahme und
+schiebt nach *Blockiert* statt zu stranden. Lehre: Setup-Annahmen (globale
+Git-Config) gehören nicht in den Betrieb — der Worker macht sich unabhängig.
+
 ## 2026-07-16 · [Betrieb: Lemonade-Server statt Ollama]
 
 Der lokale LLM-Server auf dem Strix Halo (192.168.178.27) ist Lemonade
