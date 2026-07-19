@@ -1,29 +1,53 @@
-{% set akzente = {
-    "Eingang":     "text-slate-300",
-    "Architektur": "text-sky-400",
-    "Freigabe":    "text-amber-400",
-    "Bereit":      "text-slate-300",
-    "In Arbeit":   "text-sky-400",
-    "Review":      "text-violet-400",
-    "Done":        "text-emerald-400",
-    "Blockiert":   "text-red-400",
-} %}
+{# Spaltenansicht im Stil der Design-Vorlage: Kopf mit Zähler und
+   Fortschrittsbalken, aufgeräumte Karten, „+ Karte"-Knopf je Spalte.
+   akzent(spalte) -> (text-klasse, bg-klasse); max_karten für die Balkenbreite. #}
 <div class="flex items-start gap-4 overflow-x-auto pb-4">
   {% for name, karten in spalten %}
-  <section class="w-72 shrink-0 rounded-xl border border-slate-800 bg-slate-900/60"
+  {% set at = akzent(name) %}
+  {% set anteil = (karten|length * 100 // max_karten) if max_karten else 0 %}
+  <section class="flex w-80 shrink-0 flex-col rounded-2xl border border-slate-800/80 bg-slate-900/40"
            data-spalte="{{ name }}">
-    <header class="flex items-center justify-between border-b border-slate-800 px-4 py-3">
-      <h2 class="text-xs font-semibold uppercase tracking-wider {{ akzente.get(name, 'text-slate-400') }}">{{ name }}</h2>
-      <span class="rounded-full bg-slate-800 px-2 py-0.5 text-xs text-slate-400">{{ karten|length }}</span>
+
+    <header class="px-4 pt-4 pb-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="select-none text-sm leading-none text-slate-700">⠿</span>
+          <h2 class="text-sm font-semibold {{ at[0] }}">{{ name }}</h2>
+        </div>
+        <span class="rounded-md bg-slate-800/80 px-2 py-0.5 text-xs font-medium text-slate-400">{{ karten|length }}</span>
+      </div>
+      <div class="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-800/70">
+        <div class="h-full rounded-full {{ at[1] }}" style="width: {{ anteil }}%"></div>
+      </div>
+      <div class="mt-1.5 text-[11px] text-slate-500">{{ karten|length }} Karten</div>
     </header>
-    <div class="flex min-h-16 flex-col gap-2 p-3">
-      {% for karte in karten %}
-      <a href="/karten/{{ karte.id }}" draggable="true" data-karte="{{ karte.id }}"
-         class="block cursor-grab rounded-lg border border-slate-800 bg-slate-950 p-3 hover:border-slate-600 active:cursor-grabbing">
-        <div class="text-sm font-medium text-slate-200">{{ karte.titel }}</div>
-        <div class="mt-1 text-xs text-slate-500">#{{ karte.id }} · {{ karte.aktualisiert[:16] | replace("T", " ") }}</div>
+
+    <div class="flex min-h-16 flex-1 flex-col gap-2.5 px-3 pb-3">
+      {% for k in karten %}
+      <a href="/karten/{{ k.id }}" draggable="true" data-karte="{{ k.id }}"
+         class="group block rounded-xl border border-slate-800 bg-slate-950/80 p-3.5 transition-colors hover:border-slate-600 active:cursor-grabbing">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-semibold tracking-wide text-slate-500">{{ k.chip }}</span>
+          <span class="h-2 w-2 shrink-0 rounded-full {{ k.punkt }}"></span>
+        </div>
+        <div class="mt-1.5 text-sm font-semibold leading-snug text-slate-100">{{ k.titel }}</div>
+        <div class="mt-2 flex items-center gap-1.5 text-[11px] text-slate-500">
+          <span class="h-1.5 w-1.5 shrink-0 rounded-full {{ at[1] }}"></span>
+          <span>{{ k.zeit }}</span>
+          {% if k.kommentare %}<span class="text-slate-600">·</span><span>{{ k.kommentare }} 💬</span>{% endif %}
+        </div>
+        {% if k.tag %}
+        <div class="mt-2">
+          <span class="rounded-md bg-slate-800/80 px-2 py-0.5 text-[10px] font-medium tracking-wide text-slate-400">{{ k.tag }}</span>
+        </div>
+        {% endif %}
       </a>
       {% endfor %}
+
+      <a href="/neu?spalte={{ name | urlencode }}"
+         class="mt-0.5 block rounded-lg border border-dashed border-slate-800 px-3 py-2 text-center text-xs text-slate-500 transition-colors hover:border-slate-600 hover:text-slate-300">
+        + Karte hinzufügen
+      </a>
     </div>
   </section>
   {% endfor %}

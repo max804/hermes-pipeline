@@ -25,6 +25,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
 
+from hermes_board import ansicht
 from hermes_board.speicher import KarteNichtGefunden, SpalteNichtGefunden, Speicher
 
 _HIER = Path(__file__).parent
@@ -121,9 +122,19 @@ def erzeuge_app(datenbank: Path | str | None = None) -> FastAPI:
 
     def _board_kontext(request: Request) -> dict:
         spalten = speicher.spalten()
+        # kommentar-Zähler gebündelt (eine Abfrage je Karte wäre teuer)
+        zaehler = speicher.kommentar_zaehler()
+        aufbereitet = []
+        for name in spalten:
+            karten = speicher.karten(name)
+            ansichten = [ansicht.baue_ansicht(k, zaehler.get(k.id, 0)) for k in karten]
+            aufbereitet.append((name, ansichten))
+        max_karten = max((len(k) for _, k in aufbereitet), default=0)
         return {
-            "spalten": [(name, speicher.karten(name)) for name in spalten],
+            "spalten": aufbereitet,
             "spalten_namen": spalten,
+            "akzent": ansicht.akzent,
+            "max_karten": max_karten,
         }
 
     @app.get("/", response_class=HTMLResponse)
@@ -151,7 +162,7 @@ def erzeuge_app(datenbank: Path | str | None = None) -> FastAPI:
         )
 
     @app.get("/neu", response_class=HTMLResponse)
-    def karte_neu_formular(request: Request, vorlage: str = "") -> HTMLResponse:
+    def karte_neu_formular(request: Request, vorlage: str = "", spalte: str = "") -> HTMLResponse:
         vorbelegung = ""
         datei = {
             "neu": "intake-neuprojekt.md",
@@ -161,13 +172,15 @@ def erzeuge_app(datenbank: Path | str | None = None) -> FastAPI:
             pfad = _vorlagen_verzeichnis() / datei
             if pfad.is_file():
                 vorbelegung = pfad.read_text()
+        spalten = speicher.spalten()
         return templates.TemplateResponse(
             request,
             "neu.html",
             {
                 "vorbelegung": vorbelegung,
                 "vorlage": vorlage,
-                "spalten_namen": speicher.spalten(),
+                "spalten_namen": spalten,
+                "gewaehlte_spalte": spalte if spalte in spalten else "Eingang",
             },
         )
 

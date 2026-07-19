@@ -174,3 +174,11 @@ class Speicher:
                 "SELECT * FROM kommentare WHERE karten_id=? ORDER BY id", (karten_id,)
             )
             return [Kommentar(**dict(z)) for z in zeilen]
+
+    def kommentar_zaehler(self) -> dict[int, int]:
+        """Kommentaranzahl je Karte in einer Abfrage — fürs Board-Rendering."""
+        with self._verbindung() as db:
+            zeilen = db.execute(
+                "SELECT karten_id, COUNT(*) AS anzahl FROM kommentare GROUP BY karten_id"
+            )
+            return {z["karten_id"]: z["anzahl"] for z in zeilen}
