@@ -1,0 +1,41 @@
+# Hermes-Pipeline als zwei Container aus einem Image.
+#
+#   cd deploy && cp .env.example .env   # .env ausfüllen
+#   sudo mkdir -p /opt/hermes           # geteilter Zustand (Host == Container-Pfad!)
+#   docker compose up -d --build
+#
+# WICHTIG (Docker-out-of-Docker): /opt/hermes ist auf Host UND im Container
+# derselbe Pfad. Der Worker startet make-check-Container über den Host-Socket;
+# deren Bind-Mounts liegen auf dem HOST — nur bei gleichem Pfad stimmen sie.
+# Ändere /opt/hermes nur, wenn du es an ALLEN drei Stellen (beide volumes +
+# HERMES_STATE) gleich änderst.
+
+services:
+  board:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: hermes-pipeline:latest
+    command: ["hermes-board"]
+    environment:
+      HERMES_BOARD_DB: /opt/hermes/board.db
+      HERMES_BOARD_PORT: "9119"
+    ports:
+      - "${HERMES_BOARD_PUBLISH:-9119}:9119"
+    volumes:
+      - /opt/hermes:/opt/hermes
+    restart: unless-stopped
+
+  worker:
+    image: hermes-pipeline:latest
+    entrypoint: ["/entrypoint-worker.sh"]
+    env_file: .env
+    environment:
+      HERMES_STATE: /opt/hermes
+      HERMES_BOARD_URL: http://board:9119
+    volumes:
+      - /opt/hermes:/opt/hermes
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - board
+    restart: unless-stopped

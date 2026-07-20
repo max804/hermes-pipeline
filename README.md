@@ -33,5 +33,8 @@ Repo **`github.com/max804/skeleton-web`** (Tags `web-v*`); die Kopie unter
 
 1. [`ARCHITEKTUR.md`](ARCHITEKTUR.md) lesen — Zielbild, Trio-Modell, Anti-Ziele.
 2. [`ROADMAP.md`](ROADMAP.md) lesen — wer baut was, in welcher Reihenfolge.
-3. [`INBETRIEBNAHME.md`](INBETRIEBNAHME.md) — Schritt-für-Schritt vom
-   Checkout bis zum Piloten.
+3. Installieren — zwei Wege:
+   - **Docker (empfohlen, portabel):** [`deploy/README.md`](deploy/README.md)
+     — `.env` ausfüllen, `docker compose up -d --build`, fertig.
+   - **Nativ (systemd):** [`INBETRIEBNAHME.md`](INBETRIEBNAHME.md) —
+     Schritt-für-Schritt vom Checkout bis zum Piloten.
