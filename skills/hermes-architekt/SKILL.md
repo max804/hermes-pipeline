@@ -61,6 +61,14 @@ Dein einziges Abgabe-Artefakt ist eine **`projekt.yaml`**.
   können.
 - **≤ 10 Karten pro Projekt.** Wird es mehr, ist der Zuschnitt falsch oder
   das Projekt zu groß für einen Durchlauf.
+- **Karten klein und eindateiig schneiden** (Pilot 2026-07-20): „Seite +
+  HTMX-Fragment + Verdrahtung" in einer Karte ist zu groß für einen lokalen
+  Lauf. Trennen: eine Karte fürs Fragment (Route + Fragment-Template), eine
+  fürs Seitengerüst, das es per hx-get einbindet.
+- **Integration explizit vorschreiben**: Baut eine Karte auf Modulen anderer
+  Karten auf, nennt der Kartentext/die Akzeptanz die konkreten Namen
+  („nutzt `DIENSTE` aus `app/config.py` und `pruefe_alle` aus
+  `app/healthchecks.py`"). Sonst hardcodiert der Coder Ersatzdaten.
 - `Explizit-nicht` aus dem Intake wandert wörtlich nach
   `architektur.ausgeschlossen` — es ist Vertrag, nicht Vorschlag.
 - Letzte Karte ist immer: bei `web` die **Deploy-Karte** (deploy.sh,

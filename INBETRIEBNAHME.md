@@ -180,13 +180,20 @@ journalctl -fu hermes-worker
    erledigst:
 
    ```bash
-   cd ~/projekte/homelab-status
-   git log main..karte/01-healthcheck-modul --oneline && git diff main...karte/01-healthcheck-modul
-   git checkout main && git merge --squash karte/01-healthcheck-modul
-   git commit -m "[K01] Healthcheck-Modul" && git branch -D karte/01-healthcheck-modul
+   cd ~/projekte/<projekt>
+   git log main..<branch> --oneline && git diff main...<branch>
    ```
 
-   Danach Karte im Board nach *Done* ziehen.
+   **Passt der Diff → mergen (Pflicht, sonst driften Board und Git!):**
+
+   ```bash
+   ~/hermes-pipeline/skripte/karte-mergen.sh <branch> "[K##] Titel"
+   ```
+
+   Das koppelt Squash-Merge + Branch-Löschen an einen Befehl. **Erst
+   danach** die Karte im Board nach *Done* ziehen — sonst baut die nächste
+   Karte auf einem `main` ohne diese auf (Pilot-Reibung, DECISIONS
+   2026-07-20).
 5. **Jeden Reibungspunkt sofort in `DECISIONS.md` notieren** — das ist der
    eigentliche Ertrag des Piloten.
 

@@ -26,6 +26,25 @@ ARCHITEKTUR.md lässt sich vollständig aus ihr rendern. Begründung: §3.4
 verlangt selbst „erzeugt der Worker deterministisch" — der Aider-Lauf wäre
 eine unnötige Fehlerquelle. Weniger Teile, gleiche Wirkung.
 
+## 2026-07-20 · [Pilot: Board ↔ Git driften auseinander; K03-Eskalation]
+
+Größter Pilot-Fund. K01 und K02 liefen grün und wurden auf dem Board nach
+*Done* gezogen — aber der Mensch führte den Git-Squash-Merge nicht aus.
+Board-Karte verschieben ≠ Branch mergen: `main` blieb das nackte Skeleton,
+K01/K02-Code lag nur auf ihren Branches, und K03 wurde von diesem leeren
+`main` abgezweigt. Der Coder konnte K01/K02 nicht importieren, hardcodierte
+die Dienste, ließ das Fragment leer und verdrahtete die Seite nicht → nach
+3 ehrlichen Versuchen blockiert. Zwei Ursachen, zwei Fixes:
+(1) Prozess-/Werkzeuglücke: Beim manuellen Review fehlt der automatische
+    Merge des Reviewers. Fix: Helfer `skripte/karte-mergen.sh <branch>
+    "[K##] Titel"` koppelt Squash-Merge + Branch-Löschen an einen Befehl;
+    in INBETRIEBNAHME §7.4 als Pflichtschritt vor „Karte nach Done".
+    (Tieferer Fix — Board-Aktion löst Merge aus — als Ausbaustufe notiert.)
+(2) Architekten-Fund: K03 war zu groß (Seite + Fragment + Verdrahtung in
+    einer Karte) und schrieb die Integration mit K01/K02 nicht vor.
+    Beides in den Skill übernommen. K03 selbst per §10-Eskalation von Hand
+    korrekt aufgebaut (nutzt config.DIENSTE + healthchecks.pruefe_alle).
+
 ## 2026-07-20 · [Pilot: Timeout fraß die Gate-Korrektur; manueller Retry und Diagnose]
 
 Zweiter K01-Anlauf lief in den 20-Minuten-Timeout — dabei drei Lücken
