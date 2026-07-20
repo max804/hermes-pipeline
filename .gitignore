@@ -3,3 +3,6 @@ __pycache__/
 .venv/
 .pytest_cache/
 *.db
+
+# Aider-Cache (auch beim Bug-Diff-Test im Repo-Root)
+.aider*
