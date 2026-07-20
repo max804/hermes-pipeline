@@ -26,6 +26,20 @@ ARCHITEKTUR.md lässt sich vollständig aus ihr rendern. Begründung: §3.4
 verlangt selbst „erzeugt der Worker deterministisch" — der Aider-Lauf wäre
 eine unnötige Fehlerquelle. Weniger Teile, gleiche Wirkung.
 
+## 2026-07-20 · [Reviewer gewählt: Gemma-4-31B-it (Bug-Diff-Test)]
+
+Lemonade-Modellliste hat sich geändert (ornith/qwen3.6 weg). Bug-Diff-Test
+(skripte/bug-diff-test) mit einem Diff aus drei absichtlichen Fehlern
+(Schweregrad-Verharmlosung, erfundene Farben, aufgeweichter Test): sowohl
+Gemma-4-31B-it-GGUF als auch Qwen3.5-35B-A3B-GGUF fanden alle drei; Gemma
+fand zusätzlich einen versehentlich eingebauten vierten (fehlender
+Route-Handler). Entscheidung Gemma — es erfüllt §2 (architektonisch
+verschieden vom Qwen-Coder, andere blinde Flecken) und fand alles. Qwen3.5
+(gleiche Familie) als Fallback notiert. reviewer_modell in der
+Beispiel-Config gesetzt; scharf mit Eintrag in der echten config.yaml +
+Worker-Neustart. Testmaterial-Diff um den fehlenden Route-Handler ergänzt
+(damit es genau die drei dokumentierten Fehler sind).
+
 ## 2026-07-20 · [Pilot ABGESCHLOSSEN: homelab-status läuft]
 
 Erstes Projekt vollständig durch die Pipeline: Intake → Architektur →

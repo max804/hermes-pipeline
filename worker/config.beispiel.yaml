@@ -22,11 +22,11 @@ aider_extra_args:
   - "1024"
   - "--timeout"
   - "900"
-# Reviewer-Zweitmodell: leer lassen, bis der Bug-Diff-Test entschieden ist
-# (Kandidaten aus §10: qwen3.6, ornith — Namen wie in Lemonade geladen,
-# Präfix openai/). Leer = Review bleibt beim Menschen. Muss architektonisch
-# verschieden vom Coder sein!
-reviewer_modell: ""
+# Reviewer-Zweitmodell. Bug-Diff-Test 2026-07-20 (skripte/bug-diff-test):
+# Gemma-4-31B-it und Qwen3.5-35B fanden beide alle drei Fehler; Gemma
+# gewinnt, weil architektonisch verschieden vom Qwen-Coder (§2). Leer =
+# Review bleibt beim Menschen; gesetzt = Worker reviewt + squash-merged.
+reviewer_modell: "openai/Gemma-4-31B-it-GGUF"
 aider_timeout_s: 1200        # 20 Minuten, harte Regel
 max_versuche: 3
 

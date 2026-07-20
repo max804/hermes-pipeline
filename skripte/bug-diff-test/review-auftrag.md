@@ -24,7 +24,7 @@ Akzeptanz: pytest grün; je Dienst eine Katalog-Card mit Statusbadge; nur Katalo
 ```diff
 --- /dev/null
 +++ b/app/routes/status.py
-@@ -0,0 +1,15 @@
+@@ -0,0 +1,20 @@
 +from pathlib import Path
 +from fastapi import APIRouter, Request
 +from fastapi.responses import HTMLResponse
@@ -39,6 +39,11 @@ Akzeptanz: pytest grün; je Dienst eine Katalog-Card mit Statusbadge; nur Katalo
 +    if code == 200:
 +        return "ok" if antwortzeit_ms < 500 else "warn"
 +    return "warn"
++
++@router.get("/partials/status", response_class=HTMLResponse)
++async def status(request: Request) -> HTMLResponse:
++    ergebnisse = await pruefe_alle([(d.name, d.url) for d in DIENSTE])
++    return templates.TemplateResponse(request, "partials/status.html", {"ergebnisse": ergebnisse})
 +
 --- /dev/null
 +++ b/app/templates/partials/status.html
