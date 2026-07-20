@@ -26,6 +26,24 @@ ARCHITEKTUR.md lässt sich vollständig aus ihr rendern. Begründung: §3.4
 verlangt selbst „erzeugt der Worker deterministisch" — der Aider-Lauf wäre
 eine unnötige Fehlerquelle. Weniger Teile, gleiche Wirkung.
 
+## 2026-07-20 · [Pilot ABGESCHLOSSEN: homelab-status läuft]
+
+Erstes Projekt vollständig durch die Pipeline: Intake → Architektur →
+Freigabe → Materialisierung → Coder (K01/K02/K03) → Merge → live. Letzte
+Reibung nach dem Bau: alle Dienste zeigten „fehler" — zwei Ursachen.
+(1) Architekt gab die echten URLs nicht in die Karte (Coder riet
+`localhost`-Adressen). (2) Echter Coder-Bug: `AsyncClient(timeout=
+TimeoutException(t))` übergab httpx ein Exception-Objekt statt einer Zahl →
+jeder Request scheiterte. Der Bug schlüpfte durch `make check`, weil der
+Stub nur den Fehlerpfad prüfte (unerreichbar → fehler, unabhängig vom Bug).
+Behoben: echte URLs, Timeout als Zahl, `verify=False` (selbstsignierte
+Zerts), `follow_redirects`, `klassifiziere` erkennt <500 als erreichbar.
+Zwei Lehren in den Skill: konkrete Werte (URLs) gehören in die Karte;
+IO-Stubs brauchen einen Erreichbar-Test gegen Loopback. Bilanz des Piloten:
+Trio-Modell trägt, sechs Betriebs-/Architektenreibungen gefunden und
+behoben, alle als Regeln verankert. Nächste Ausbaustufe: Reviewer scharf
+schalten (Bug-Diff-Test), dann entfällt das manuelle Merge-Problem.
+
 ## 2026-07-20 · [Pilot: Board ↔ Git driften auseinander; K03-Eskalation]
 
 Größter Pilot-Fund. K01 und K02 liefen grün und wurden auf dem Board nach

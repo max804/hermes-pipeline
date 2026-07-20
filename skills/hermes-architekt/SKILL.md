@@ -69,6 +69,17 @@ Dein einziges Abgabe-Artefakt ist eine **`projekt.yaml`**.
   Karten auf, nennt der Kartentext/die Akzeptanz die konkreten Namen
   („nutzt `DIENSTE` aus `app/config.py` und `pruefe_alle` aus
   `app/healthchecks.py`"). Sonst hardcodiert der Coder Ersatzdaten.
+- **Konkrete Werte gehören in die Karte** (Pilot 2026-07-20): URLs, Ports,
+  IDs, Registeradressen aus dem Intake schreibt der Architekt WÖRTLICH in
+  Kartentext oder Test-Stub — nicht nur „Dienste mit URL". Was der Coder
+  nicht kennt, rät er (im Pilot: `http://localhost:9443` statt der echten
+  Adresse).
+- **IO-Stubs brauchen einen Erreichbar-Test**: Wer eine HTTP-/Netz-Funktion
+  spezifiziert, prüft im Stub NICHT nur den Fehlerpfad, sondern auch den
+  Erfolgsfall gegen einen lokalen Loopback-Server (127.0.0.1, im
+  `--network none`-Container verfügbar). Sonst schlüpft ein kaputter Client
+  (z. B. falsch gebauter Timeout) durch `make check`, weil jeder Aufruf
+  ohnehin „fehler" liefert.
 - `Explizit-nicht` aus dem Intake wandert wörtlich nach
   `architektur.ausgeschlossen` — es ist Vertrag, nicht Vorschlag.
 - Letzte Karte ist immer: bei `web` die **Deploy-Karte** (deploy.sh,
