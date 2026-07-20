@@ -54,5 +54,25 @@ def test_kommentar_und_verschieben_ueber_ui(client):
 
 
 def test_statische_artefakte(client):
-    for datei in ("/static/theme.css", "/static/htmx.min.js", "/static/dragdrop.js"):
+    for datei in (
+        "/static/theme.css",
+        "/static/htmx.min.js",
+        "/static/dragdrop.js",
+        "/static/dashboard.css",
+        "/static/dashboard.js",
+    ):
         assert client.get(datei).status_code == 200
+
+
+def test_worker_status_wechselt_nach_api_poll(client):
+    """System-Überblick ist ehrlich: erst 'noch kein Poll', nach einem
+    /api/karten-Aufruf (wie ihn der Worker macht) 'gepollt'."""
+    assert "noch kein Poll" in client.get("/").text
+    client.get("/api/karten", params={"spalte": "Bereit"})
+    assert "gepollt" in client.get("/").text
+
+
+def test_partial_liefert_oob_bereiche(client):
+    text = client.get("/partials/board").text
+    assert 'hx-swap-oob="true"' in text
+    assert 'id="topmetriken"' in text

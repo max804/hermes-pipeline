@@ -1,0 +1,16 @@
+{% set w = worker %}
+<div class="metric-chip">
+  <span class="{{ 'ok' if w.zustand == 'ok' else 'warn' }}">●</span>
+  <b>Worker</b>
+  <small class="{{ 'ok' if w.zustand == 'ok' else 'warn' }}">{{ w.text }}</small>
+</div>
+<div class="metric-chip">
+  <span class="ok">●</span>
+  <b>Board</b>
+  <small class="ok">online</small>
+</div>
+<div class="metric-chip">
+  <span>▥</span>
+  <b>Karten gesamt</b>
+  <small>{{ karten_gesamt }}</small>
+</div>

@@ -27,7 +27,7 @@
       <select name="spalte"
               class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200">
         {% for name in spalten_namen %}
-        <option value="{{ name }}">{{ name }}</option>
+        <option value="{{ name }}" {% if name == gewaehlte_spalte %}selected{% endif %}>{{ name }}</option>
         {% endfor %}
       </select>
     </label>

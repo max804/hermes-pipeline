@@ -1,0 +1,13 @@
+{% set w = worker %}
+<div class="section-title"><b>System-Überblick</b>
+  <span class="{{ '' if w.zustand == 'ok' else 'warn' }}">{{ 'OK' if w.zustand == 'ok' else '…' }}</span>
+</div>
+<ul>
+  <li><span>▥</span>Board <b>OK</b></li>
+  <li><span>⚙</span>Worker
+    <b class="{{ 'neutral' if w.zustand == 'wartet' else ('warn' if w.zustand == 'stale' else '') }}">
+      {{ 'WARTET' if w.zustand == 'wartet' else ('ALT' if w.zustand == 'stale' else 'OK') }}</b>
+    <small>{{ w.text }}</small>
+  </li>
+  <li><span>◉</span>Karten <b class="neutral">{{ karten_gesamt }}</b></li>
+</ul>

@@ -1,10 +1,53 @@
-{% extends "base.html" %}
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hermes Board</title>
+  <link rel="stylesheet" href="/static/dashboard.css">
+  <script src="/static/htmx.min.js" defer></script>
+  <script src="/static/dragdrop.js" defer></script>
+  <script src="/static/dashboard.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
 
-{% block inhalt %}
-<div id="board-rahmen"
-     hx-get="/partials/board"
-     hx-trigger="every 5s [!window.hermesZieht], board-refresh from:body"
-     hx-swap="innerHTML">
-  {% include "partials/board.html" %}
-</div>
-{% endblock %}
+    <header class="topbar">
+      <a class="brand" href="/">
+        <span class="brand-mark">◈</span>
+        <span><strong>Hermes Board</strong><small>Agentengetriebene Software-Pipeline</small></span>
+      </a>
+      <label class="search"><span>⌕</span><input id="kartensuche" placeholder="Karten durchsuchen…"></label>
+      <div class="top-metrics" id="topmetriken">
+        {% include "partials/metriken.html" %}
+      </div>
+      <div class="top-actions">
+        <button class="button ghost theme-toggle" data-action="theme" aria-label="Darstellung wechseln" title="Hell/Dunkel">☾</button>
+        <a class="button outline" href="/neu?vorlage=aenderung">± <span>Änderung</span></a>
+        <a class="button primary" href="/neu?vorlage=neu">＋ Neues Projekt</a>
+      </div>
+    </header>
+
+    <aside class="sidebar">
+      <nav class="main-nav">
+        <a class="active" href="/"><span>▥</span>Board</a>
+        <a href="/neu"><span>＋</span>Neue Karte</a>
+      </nav>
+      <section class="system-list" id="systemliste">
+        {% include "partials/system.html" %}
+      </section>
+    </aside>
+
+    <main class="workspace">
+      <div class="panel-heading"><span>▥</span><b>Kanban — Pipeline</b></div>
+      <section class="kanban" id="kanban"
+               hx-get="/partials/board"
+               hx-trigger="every 5s [!window.hermesZieht]"
+               hx-swap="innerHTML">
+        {% include "partials/board.html" %}
+      </section>
+    </main>
+
+  </div>
+</body>
+</html>

@@ -16,6 +16,7 @@ Konfiguration über ENV:
 from __future__ import annotations
 
 import os
+import time
 from pathlib import Path
 
 import markdown as markdown_lib
@@ -25,6 +26,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
 
+from hermes_board import ansicht
 from hermes_board.speicher import KarteNichtGefunden, SpalteNichtGefunden, Speicher
 
 _HIER = Path(__file__).parent
@@ -82,6 +84,9 @@ def erzeuge_app(datenbank: Path | str | None = None) -> FastAPI:
 
     @app.get("/api/karten")
     def api_karten(spalte: str | None = None) -> list[dict]:
+        # Diese Route ruft praktisch nur der Poll-Worker auf — der Zeitstempel
+        # speist den ehrlichen Worker-Status im System-Überblick.
+        app.state.letzter_worker_poll = time.monotonic()
         return [
             {"id": k.id, "titel": k.titel, "beschreibung": k.beschreibung, "spalte": k.spalte}
             for k in speicher.karten(spalte)
@@ -119,11 +124,35 @@ def erzeuge_app(datenbank: Path | str | None = None) -> FastAPI:
 
     # --- Dashboard-UI ---------------------------------------------------------
 
+    app.state.letzter_worker_poll = None
+
+    def _worker_status() -> dict:
+        """Ehrlicher Live-Status: wann hat der Worker zuletzt gepollt?"""
+        stempel = app.state.letzter_worker_poll
+        if stempel is None:
+            return {"zustand": "wartet", "text": "noch kein Poll"}
+        her = int(time.monotonic() - stempel)
+        if her <= 90:
+            return {"zustand": "ok", "text": f"vor {her}s gepollt"}
+        return {"zustand": "stale", "text": f"vor {her // 60} Min gepollt"}
+
     def _board_kontext(request: Request) -> dict:
         spalten = speicher.spalten()
+        zaehler = speicher.kommentar_zaehler()
+        aufbereitet = []
+        for name in spalten:
+            karten = speicher.karten(name)
+            ansichten = [ansicht.baue_ansicht(k, zaehler.get(k.id, 0)) for k in karten]
+            aufbereitet.append((name, ansichten))
+        max_karten = max((len(k) for _, k in aufbereitet), default=0)
+        gesamt = sum(len(k) for _, k in aufbereitet)
         return {
-            "spalten": [(name, speicher.karten(name)) for name in spalten],
+            "spalten": aufbereitet,
             "spalten_namen": spalten,
+            "akzent": ansicht.akzent,
+            "max_karten": max_karten,
+            "karten_gesamt": gesamt,
+            "worker": _worker_status(),
         }
 
     @app.get("/", response_class=HTMLResponse)
@@ -132,7 +161,8 @@ def erzeuge_app(datenbank: Path | str | None = None) -> FastAPI:
 
     @app.get("/partials/board", response_class=HTMLResponse)
     def board_partial(request: Request) -> HTMLResponse:
-        return templates.TemplateResponse(request, "partials/board.html", _board_kontext(request))
+        kontext = _board_kontext(request) | {"oob": True}
+        return templates.TemplateResponse(request, "partials/board.html", kontext)
 
     @app.get("/karten/{karten_id}", response_class=HTMLResponse)
     def karte_detail(request: Request, karten_id: int) -> HTMLResponse:
@@ -151,7 +181,7 @@ def erzeuge_app(datenbank: Path | str | None = None) -> FastAPI:
         )
 
     @app.get("/neu", response_class=HTMLResponse)
-    def karte_neu_formular(request: Request, vorlage: str = "") -> HTMLResponse:
+    def karte_neu_formular(request: Request, vorlage: str = "", spalte: str = "") -> HTMLResponse:
         vorbelegung = ""
         datei = {
             "neu": "intake-neuprojekt.md",
@@ -161,13 +191,15 @@ def erzeuge_app(datenbank: Path | str | None = None) -> FastAPI:
             pfad = _vorlagen_verzeichnis() / datei
             if pfad.is_file():
                 vorbelegung = pfad.read_text()
+        spalten = speicher.spalten()
         return templates.TemplateResponse(
             request,
             "neu.html",
             {
                 "vorbelegung": vorbelegung,
                 "vorlage": vorlage,
-                "spalten_namen": speicher.spalten(),
+                "spalten_namen": spalten,
+                "gewaehlte_spalte": spalte if spalte in spalten else "Eingang",
             },
         )
 
