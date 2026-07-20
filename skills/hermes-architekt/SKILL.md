@@ -54,6 +54,9 @@ Dein einziges Abgabe-Artefakt ist eine **`projekt.yaml`**.
   asynchrone Funktion über `asyncio.run(...)` auf; wer sync will, schreibt
   es explizit in die Akzeptanz. Vor Abgabe jeden Stub gedanklich gegen
   beide Implementierungsvarianten (sync und async) durchspielen.
+- **Gate-Korrekturen an Stubs immer auf `main`** (an der
+  `.wartend`-Datei), nie nur auf dem Kartenbranch: Timeout/Abbruch
+  verwirft den Branch mitsamt allem, was nur dort liegt (§8).
 - Abhängigkeiten zyklenfrei; jede Karte muss auf grünem `main` aufsetzen
   können.
 - **≤ 10 Karten pro Projekt.** Wird es mehr, ist der Zuschnitt falsch oder

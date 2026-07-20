@@ -65,6 +65,13 @@ class WorkerZustand:
         ).fetchone()
         return zeile[0] if zeile else 0
 
+    def setze_versuche(self, karten_id: str, wert: int) -> None:
+        self._db.execute(
+            "UPDATE karten SET versuche=?, aktualisiert=? WHERE karten_id=?",
+            (wert, _jetzt(), karten_id),
+        )
+        self._db.commit()
+
     def erhoehe_versuche(self, karten_id: str) -> int:
         self._db.execute(
             "UPDATE karten SET versuche=versuche+1, aktualisiert=? WHERE karten_id=?",

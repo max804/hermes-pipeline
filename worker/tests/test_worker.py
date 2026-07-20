@@ -145,6 +145,34 @@ def test_timeout_verwirft_branch_und_zaehlt(konfig, board, zustand, projekt_repo
     assert "karte/" not in branches  # verworfen
 
 
+def test_manueller_retry_setzt_zaehler_zurueck(konfig, board, zustand, projekt_repo):
+    """Eine ausgeschöpfte Karte in *Bereit* kann nur ein Mensch dorthin gelegt
+    haben — der Zähler startet frisch, alte Prüfausgabe wird verworfen."""
+    board.lege_an("7", konfig.spalten.bereit, KARTE_GUELTIG, titel="Hauptmodul")
+    zustand.registriere("7", "homelab-status", "karte/01-hauptmodul")
+    for _ in range(3):
+        zustand.erhoehe_versuche("7")
+    zustand.setze_letzte_pruefung("7", "alter roter Kontext")
+
+    aider = _aider()
+    _worker(konfig, board, zustand, aider=aider).tick()
+
+    assert board.spalte_von("7") == konfig.spalten.review  # grüner Fake-Lauf
+    assert zustand.versuche("7") == 0
+    assert aider.aufrufe[0]["letzte_pruefung"] == ""
+    assert any("zurückgesetzt" in text for _, text in board.kommentare)
+
+
+def test_timeout_kommentar_enthaelt_aider_ausgabe(konfig, board, zustand, projekt_repo):
+    board.lege_an("7", konfig.spalten.bereit, KARTE_GUELTIG, titel="Hauptmodul")
+
+    def aider(konfig_, repo_, kartentext, dateien, letzte_pruefung="", nur_lesen=None):
+        return AiderErgebnis(timeout=True, exit_code=-1, ausgabe_ende="Lemonade antwortet nicht")
+
+    _worker(konfig, board, zustand, aider=aider).tick()
+    assert any("Lemonade antwortet nicht" in text for _, text in board.kommentare)
+
+
 def test_kaputtes_kartenformat_blockiert(konfig, board, zustand):
     board.lege_an("7", konfig.spalten.bereit, "Nur Text ohne Front-Matter")
     _worker(konfig, board, zustand).tick()

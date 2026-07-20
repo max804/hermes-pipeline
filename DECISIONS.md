@@ -26,6 +26,20 @@ ARCHITEKTUR.md lässt sich vollständig aus ihr rendern. Begründung: §3.4
 verlangt selbst „erzeugt der Worker deterministisch" — der Aider-Lauf wäre
 eine unnötige Fehlerquelle. Weniger Teile, gleiche Wirkung.
 
+## 2026-07-20 · [Pilot: Timeout fraß die Gate-Korrektur; manueller Retry und Diagnose]
+
+Zweiter K01-Anlauf lief in den 20-Minuten-Timeout — dabei drei Lücken
+gefunden: (1) Der Versuchszähler stand nach dem manuellen Retry noch auf 3,
+die Gate-Korrektur bekam genau einen Versuch. Fix: Eine ausgeschöpfte Karte
+in *Bereit* kann nur ein Mensch dorthin gelegt haben → Worker setzt den
+Zähler automatisch zurück und leert die alte Prüfausgabe. (2) Der
+Timeout-Kommentar enthielt keine Aider-Ausgabe — Timeouts waren nicht
+diagnostizierbar. Fix: Ausgabe-Ende wandert in den Kommentar. (3) Der
+Timeout verwarf den Kartenbranch mitsamt der Gate-Korrektur, die nur dort
+lag (§8 by design). Lehre: Stub-Gate-Korrekturen gehören auf main an die
+.wartend-Datei — in den Architekten-Skill übernommen. Timeout-Ursache
+(Lemonade?) offen, mit der neuen Diagnose beim nächsten Lauf sichtbar.
+
 ## 2026-07-20 · [Pilot: K01 blockiert — Architekten-Stub war in sich widersprüchlich]
 
 Erster echter Blocker des Piloten, Ursache beim Architekten, nicht beim

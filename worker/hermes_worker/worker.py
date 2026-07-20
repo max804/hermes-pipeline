@@ -219,7 +219,7 @@ class Worker:
                 break
             if meta_probe.projekt in gesperrt:
                 log.info(
-                    "karte %s wartet: projekt %s hat karte in review",
+                    "karte %s wartet: projekt %s hat offene karte in review/in arbeit/blockiert",
                     kandidat.id, meta_probe.projekt,
                 )
                 continue
@@ -250,6 +250,17 @@ class Worker:
 
         branch = git.branch_name(meta.karte, karte.titel or meta.karte)
         self.zustand.registriere(karte.id, meta.projekt, branch)
+
+        if self.zustand.versuche(karte.id) >= self.konfig.max_versuche:
+            # Eine ausgeschöpfte Karte kann nur ein Mensch zurück nach *Bereit*
+            # gelegt haben (Gate-Korrektur/Retry) — frischer Zähler, frischer Lauf.
+            self.zustand.setze_versuche(karte.id, 0)
+            self.zustand.setze_letzte_pruefung(karte.id, "")
+            self.board.kommentiere(
+                karte.id, "Manueller Retry erkannt — Versuchszähler zurückgesetzt."
+            )
+            log.info("karte %s: manueller retry, zaehler zurueckgesetzt", karte.id)
+
         self.board.verschiebe(karte.id, self.konfig.spalten.in_arbeit)
         self.zustand.setze_laufend(karte.id, True)
         log.info("karte %s (%s) startet auf branch %s", karte.id, meta.karte, branch)
@@ -266,7 +277,10 @@ class Worker:
                 nur_lesen=meta.nur_lesen,
             )
             if ergebnis.timeout:
-                self._nach_abbruch(karte, meta.projekt, repo_pfad, branch, "20-Minuten-Timeout")
+                self._nach_abbruch(
+                    karte, meta.projekt, repo_pfad, branch,
+                    "20-Minuten-Timeout", ausgabe=ergebnis.ausgabe_ende,
+                )
                 return
             pruefung = self._pruefung(
                 repo_pfad, self.konfig.docker_speicher, self.konfig.docker_cpus
@@ -347,12 +361,17 @@ class Worker:
         self.board.verschiebe(karte.id, self.konfig.spalten.done)
         log.info("projekt %s materialisiert (%d karten)", projekt.projekt.name, len(projekt.karten))
 
-    def _nach_abbruch(self, karte, projekt: str, repo_pfad, branch: str, grund: str) -> None:
-        """Abbruch/Timeout: Branch verwerfen, zurück auf *Bereit*, Zähler +1."""
+    def _nach_abbruch(
+        self, karte, projekt: str, repo_pfad, branch: str, grund: str, ausgabe: str = ""
+    ) -> None:
+        """Abbruch/Timeout: Branch verwerfen, zurück auf *Bereit*, Zähler +1.
+        Die letzte Aider-Ausgabe wandert in den Kommentar — sonst ist ein
+        Timeout nicht diagnostizierbar."""
         git.verwerfe_branch(repo_pfad, branch)
+        diagnose = f"\n\nLetzte Aider-Ausgabe:\n```\n{ausgabe[-1200:]}\n```" if ausgabe.strip() else ""
         versuche = self.zustand.erhoehe_versuche(karte.id)
         if versuche >= self.konfig.max_versuche:
-            self.board.kommentiere(karte.id, f"{grund}, Versuch {versuche} — blockiert.")
+            self.board.kommentiere(karte.id, f"{grund}, Versuch {versuche} — blockiert.{diagnose}")
             self.board.verschiebe(karte.id, self.konfig.spalten.blockiert)
             self._melde(
                 self.konfig.telegram,
@@ -360,7 +379,9 @@ class Worker:
             )
         else:
             self.board.kommentiere(
-                karte.id, f"{grund}, Versuch {versuche}/{self.konfig.max_versuche} — Branch verworfen."
+                karte.id,
+                f"{grund}, Versuch {versuche}/{self.konfig.max_versuche} — "
+                f"Branch verworfen.{diagnose}",
             )
             self.board.verschiebe(karte.id, self.konfig.spalten.bereit)
         log.warning("karte %s abbruch (%s), versuch %d", karte.id, grund, versuche)
