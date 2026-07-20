@@ -26,6 +26,22 @@ ARCHITEKTUR.md lässt sich vollständig aus ihr rendern. Begründung: §3.4
 verlangt selbst „erzeugt der Worker deterministisch" — der Aider-Lauf wäre
 eine unnötige Fehlerquelle. Weniger Teile, gleiche Wirkung.
 
+## 2026-07-20 · [Pilot: K01 blockiert — Architekten-Stub war in sich widersprüchlich]
+
+Erster echter Blocker des Piloten, Ursache beim Architekten, nicht beim
+Coder: Der Test-Stub von K01 rief `pruefe_dienst` synchron auf, während
+die Akzeptanzkriterien Nebenläufigkeit per `asyncio.gather` verlangten —
+der Coder baute folgerichtig `async def`, und der Stub erhielt eine
+Coroutine (`'coroutine' object has no attribute 'status'`). Der Coder
+durfte den Stub laut AGENTS.md nicht anfassen: drei ehrliche Runden, dann
+Blockiert + Ping. Das System verhielt sich exakt wie entworfen (inklusive
+Sequenz-Wächter, der K02/K03 zurückhielt). Behebung als Gate-Korrektur:
+Stub auf dem Kartenbranch auf `asyncio.run(pruefe_dienst(...))`
+korrigiert, Karte zurück nach Bereit. Lehre in den Architekten-Skill
+übernommen: Stubs müssen ihr Interface konsistent behandeln — wer
+async-Verhalten in der Akzeptanz fordert, ruft im Stub JEDE potenziell
+asynchrone Funktion über `asyncio.run` auf (oder legt sync explizit fest).
+
 ## 2026-07-17 · [Pilot-Reibung: Materialisierung strandete in "In Arbeit"]
 
 Erste echte Materialisierung im Pilot blieb in *In Arbeit* hängen, keine

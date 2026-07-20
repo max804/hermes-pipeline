@@ -47,6 +47,13 @@ Dein einziges Abgabe-Artefakt ist eine **`projekt.yaml`**.
 - Pflichtfelder je Karte: `titel`, `ziel` (ein Satz), `dateien`
   (im Skeleton-Namensraum!), `akzeptanz` (maschinenprüfbar), `abhaengig_von`,
   `test_stub` (rote Tests — Akzeptanzkriterien als Code, nicht Prosa).
+- **Stub-Konsistenz** (Lehre aus dem Piloten, DECISIONS 2026-07-20): Der
+  Stub legt das Interface fest und der Coder darf ihn nicht ändern — ein
+  widersprüchlicher Stub blockiert die Karte unweigerlich. Wer in der
+  Akzeptanz async/Nebenläufigkeit fordert, ruft im Stub JEDE potenziell
+  asynchrone Funktion über `asyncio.run(...)` auf; wer sync will, schreibt
+  es explizit in die Akzeptanz. Vor Abgabe jeden Stub gedanklich gegen
+  beide Implementierungsvarianten (sync und async) durchspielen.
 - Abhängigkeiten zyklenfrei; jede Karte muss auf grünem `main` aufsetzen
   können.
 - **≤ 10 Karten pro Projekt.** Wird es mehr, ist der Zuschnitt falsch oder
