@@ -26,9 +26,18 @@ html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-ap
 button,input{font:inherit;color:inherit}button{cursor:pointer}
 a{color:inherit}
 
-.app-shell{width:100%;min-height:100vh;display:grid;
-  grid-template-columns:200px minmax(0,1fr);grid-template-rows:64px minmax(0,1fr);
-  background:var(--page)}
+.app-shell{width:100%;height:100vh;display:grid;
+  grid-template-columns:var(--sidebar-w,200px) minmax(0,1fr);grid-template-rows:64px minmax(0,1fr);
+  background:var(--page);overflow:hidden}
+
+/* --- Größen-Resizer der Hauptbereiche ---------------------------------------- */
+.resizer{z-index:6}
+.resizer-x{position:absolute;top:0;right:-3px;width:7px;height:100%;cursor:col-resize}
+.resizer-x::after{content:"";position:absolute;top:0;bottom:0;left:3px;width:1px;background:var(--line)}
+.resizer-x:hover::after,.resizer-x.aktiv::after{left:2px;width:2px;background:var(--blue-2)}
+.resizer-y{height:10px;flex-shrink:0;cursor:row-resize;display:flex;align-items:center;justify-content:center}
+.resizer-y::after{content:"";width:40px;height:3px;border-radius:3px;background:var(--line)}
+.resizer-y:hover::after,.resizer-y.aktiv::after{background:var(--blue-2)}
 
 /* --- Topbar ---------------------------------------------------------------- */
 .topbar{grid-column:1/-1;display:flex;align-items:center;gap:14px;
@@ -64,7 +73,7 @@ a{color:inherit}
 
 /* --- Sidebar ---------------------------------------------------------------- */
 .sidebar{grid-row:2;grid-column:1;border-right:1px solid var(--line);padding:10px 8px;
-  display:flex;flex-direction:column;background:var(--surface)}
+  display:flex;flex-direction:column;background:var(--surface);position:relative;overflow:auto}
 .main-nav{display:grid;gap:2px}
 .main-nav a{height:36px;border-radius:7px;display:flex;align-items:center;gap:12px;padding:0 10px;
   text-decoration:none;font-weight:600}
@@ -84,14 +93,19 @@ a{color:inherit}
 .system-list li small{grid-column:2/-1;font-size:9px;color:var(--text-soft);margin-top:2px}
 
 /* --- Workspace / Kanban ------------------------------------------------------ */
-.workspace{grid-column:2;grid-row:2;padding:12px 12px 16px;min-width:0;overflow:auto;background:var(--page)}
-.panel-heading{height:28px;display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:6px}
+.workspace{grid-column:2;grid-row:2;padding:12px 12px 16px;min-width:0;
+  display:flex;flex-direction:column;overflow:hidden;background:var(--page)}
+.panel-heading{height:28px;display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:6px;flex-shrink:0}
 .panel-heading>span{font-size:18px;color:var(--blue-2)}
+/* Viewport: nimmt die Resthöhe (oder --board-h, wenn per Griff gesetzt) und
+   scrollt waagerecht. Die Spalten darin bekommen ihre eigene senkrechte Scroll-Liste. */
+.board-viewport{flex:0 1 var(--board-h,100%);min-height:160px;overflow:auto}
 .kanban{display:grid;grid-template-columns:repeat(8,minmax(168px,1fr));gap:8px;min-width:1350px;
-  align-items:start}
+  align-items:stretch;height:100%}
 .kanban-column{border:1px solid var(--border);border-radius:8px;background:var(--surface-2);
-  min-width:0;padding:8px 7px 6px;display:flex;flex-direction:column;box-shadow:var(--shadow)}
-.column-head{border-bottom:1px solid var(--line);margin-bottom:6px;padding-bottom:7px}
+  min-width:0;padding:8px 7px 6px;display:flex;flex-direction:column;box-shadow:var(--shadow);
+  min-height:0;overflow:hidden}
+.column-head{border-bottom:1px solid var(--line);margin-bottom:6px;padding-bottom:7px;flex-shrink:0}
 .column-title{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:12px}
 .column-title .count{font-size:10px;color:var(--text-soft);font-weight:600}
 .column-stats{display:grid;grid-template-columns:1fr auto;align-items:center;gap:9px;margin-top:8px;font-size:10px;color:var(--text-soft)}
@@ -99,7 +113,11 @@ a{color:inherit}
 .progress{height:5px;border-radius:5px;background:#314057;overflow:hidden}
 html[data-theme="light"] .progress{background:#e2e7ef}
 .progress span{display:block;height:100%;border-radius:5px;background:var(--bar,var(--green))}
-.task-list{display:grid;gap:5px}
+.task-list{display:grid;gap:5px;flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;
+  padding-right:3px;align-content:start}
+.task-list::-webkit-scrollbar{width:8px}
+.task-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px}
+.task-list::-webkit-scrollbar-thumb:hover{background:var(--blue-2)}
 .task-card{display:block;text-decoration:none;border:1px solid var(--border);border-radius:6px;
   background:var(--surface);min-height:64px;padding:8px;box-shadow:0 1px 2px rgba(0,0,0,.08);
   position:relative;transition:.12s}
@@ -115,11 +133,12 @@ html[data-theme="light"] .progress{background:#e2e7ef}
 html[data-theme="light"] .tag.blue{background:#eaf3ff;color:#126cea}
 .add-card{display:block;text-align:center;text-decoration:none;height:26px;line-height:24px;
   margin-top:6px;border:1px solid var(--border);border-radius:5px;background:var(--surface);
-  color:var(--blue-2);font-size:10px}
+  color:var(--blue-2);font-size:10px;flex-shrink:0}
 .add-card:hover{background:var(--hover)}
 
 @media(max-width:1100px){
   .app-shell{grid-template-columns:64px minmax(0,1fr)}
+  .resizer{display:none}
   .brand small,.search{display:none}
   .main-nav a{justify-content:center;padding:0}
   .main-nav a:not(.active){font-size:0}

@@ -36,16 +36,22 @@
       <section class="system-list" id="systemliste">
         {% include "partials/system.html" %}
       </section>
+      <div class="resizer resizer-x" data-resize="sidebar"
+           title="Breite ziehen · Doppelklick: zurücksetzen"></div>
     </aside>
 
     <main class="workspace">
       <div class="panel-heading"><span>▥</span><b>Kanban — Pipeline</b></div>
-      <section class="kanban" id="kanban"
-               hx-get="/partials/board"
-               hx-trigger="every 5s [!window.hermesZieht]"
-               hx-swap="innerHTML">
-        {% include "partials/board.html" %}
-      </section>
+      <div class="board-viewport">
+        <section class="kanban" id="kanban"
+                 hx-get="/partials/board"
+                 hx-trigger="every 5s [!window.hermesZieht]"
+                 hx-swap="innerHTML">
+          {% include "partials/board.html" %}
+        </section>
+      </div>
+      <div class="resizer resizer-y" data-resize="board"
+           title="Höhe ziehen · Doppelklick: zurücksetzen"></div>
     </main>
 
   </div>
